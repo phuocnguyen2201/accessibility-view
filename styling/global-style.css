@@ -1,0 +1,152 @@
+/* Dark mode stylesheet for Figma plugin */
+body {
+    margin: 0;
+    font-family: Inter, sans-serif;
+    font-size: 14px;
+    background-color: var(--figma-color-bg);
+    color: var(--figma-color-text);
+    transition: background 0.2s, color 0.2s;
+  }
+  
+  .container {
+    padding: 16px;
+    width: 240px;
+  }
+  
+  h1 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #ffffff;
+  }
+  
+  button {
+    background-color: #0d99ff;
+    border: none;
+    color: #ffffff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+    background: #f3f3f3;
+    color: #222;
+    border: 1px solid #bbb;
+    border-radius: 4px;
+    padding: 0.5em 1em;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border 0.2s;
+  }
+  
+  button:hover {
+    background-color: #007be5;
+  }
+  
+  button:active {
+    background-color: #0060c1;
+  }
+  
+  input[type="text"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    background-color: #3c3c3c;
+    color: #ffffff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  
+  input::placeholder,
+  textarea::placeholder {
+    color: #bbbbbb;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #dddddd;
+  }
+  
+  hr {
+    border: none;
+    border-top: 1px solid #444;
+    margin: 16px 0;
+  }
+
+  input[type="color"] {
+    border: none;
+    background: transparent;
+    width: 2em;
+    height: 2em;
+    padding: 0;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    transition: background 0.2s, border 0.2s;
+  }
+
+  #color-contrast-tool {
+    background: #fafafa;
+    border-radius: 8px;
+    padding: 1em;
+    margin-top: 1em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+
+  table, th, td {
+    border: 1px solid #bbb;
+    border-collapse: collapse;
+    padding: 0.3em 0.7em;
+    transition: border-color 0.2s;
+  }
+
+  /* Dark mode styles */
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: #181a1b;
+      color: #f3f3f3;
+    }
+    button {
+      background: #23272b;
+      color: #f3f3f3;
+      border: 1px solid #444;
+    }
+    #color-contrast-tool {
+      background: #23272b;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    input[type="color"] {
+      background: #23272b;
+      border: 1px solid #444;
+    }
+    table, th, td {
+      border-color: #444;
+    }
+  }
+
+  /* Manual dark mode toggle with .dark class */
+  body.dark {
+    background: #181a1b !important;
+    color: #f3f3f3 !important;
+  }
+  body.dark button {
+    background: #23272b !important;
+    color: #f3f3f3 !important;
+    border: 1px solid #444 !important;
+  }
+  body.dark #color-contrast-tool {
+    background: #23272b !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+  }
+  body.dark input[type="color"] {
+    background: #23272b !important;
+    border: 1px solid #444 !important;
+  }
+  body.dark table, body.dark th, body.dark td {
+    border-color: #444 !important;
+  }
+  

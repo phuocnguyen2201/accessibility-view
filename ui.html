@@ -1,0 +1,83 @@
+
+<body id="dark">
+<h2>Accessibility View</h2>
+
+<button id="analysis">Analysis</button>
+
+<div id="color-contrast-tool">
+
+  <button id="check-contrast">Check Color Contrast</button>
+  <div id="contrastResult" style="margin-top: 1em;"></div>
+</div>
+</body>
+<script type="module">
+  document.getElementById('analysis').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'analysis' } }, '*')
+  }
+  
+  document.getElementById('check-contrast').onclick = function() {
+    parent.postMessage({ pluginMessage: { type: 'check-contrast' } }, '*');
+  };
+
+  // Listen for messages from the plugin
+  window.onmessage = (event) => {
+    const msg = event.data.pluginMessage;
+    if (!msg || msg.type !== 'CONTRAST_RESULT') return;
+    const { frameColor, textColor} = msg;
+    const contrast = getContrastRatio(frameColor, textColor);
+    const levels = getWcagLevels(contrast);
+    const resultDiv = document.getElementById('contrastResult');
+    resultDiv.innerHTML = `
+      <div style="display: flex; gap: 2em; align-items: center;">
+        <div style="text-align:center">
+          <div style="width: 60px; height: 60px; background: ${frameColor}; border: 1px solid #ccc; margin: 0 auto;"></div>
+          <div style="margin-top: 0.5em; font-family: monospace;">${frameColor.toUpperCase()}</div>
+        </div>
+        <div style="text-align:center">
+          <div style="width: 60px; height: 60px; background: ${textColor}; border: 1px solid #ccc; margin: 0 auto;"></div>
+          <div style="margin-top: 0.5em; font-family: monospace;">${textColor.toUpperCase()}</div>
+        </div>
+      </div>
+      <div style="margin-top: 1em; font-size: 1.2em;">Contrast Ratio: <b>${contrast.toFixed(2)}:1</b></div>
+      <div style="margin-top: 1em;">
+        <table style="border-collapse: collapse;">
+          <tr><th></th><th style='padding:0 1em;'>AA</th><th style='padding:0 1em;'>AAA</th></tr>
+          <tr><td style='padding-right:1em;'>Large Text</td><td style='text-align:center;'>${levels.AA_large ? '✅' : '❌'}</td><td style='text-align:center;'>${levels.AAA_large ? '✅' : '❌'}</td></tr>
+          <tr><td style='padding-right:1em;'>Small Text</td><td style='text-align:center;'>${levels.AA_small ? '✅' : '❌'}</td><td style='text-align:center;'>${levels.AAA_small ? '✅' : '❌'}</td></tr>
+        </table>
+        <div style="font-size:0.9em; color:#666; margin-top:0.5em;">Large text: 18pt+ or 14pt+ bold</div>
+      </div>
+    `;
+  };
+
+function luminance(rgb) {
+  const a = rgb.map((v) => {
+    v = v / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  });
+  return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+}
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) {
+    hex = hex.split('').map((x) => x + x).join('');
+  }
+  const num = parseInt(hex, 16);
+  return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
+}
+function getContrastRatio(hex1, hex2) {
+  const lum1 = luminance(hexToRgb(hex1));
+  const lum2 = luminance(hexToRgb(hex2));
+  const brightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+}
+function getWcagLevels(contrast) {
+  return {
+    AA_large: contrast >= 3,
+    AA_small: contrast >= 4.5,
+    AAA_large: contrast >= 4.5,
+    AAA_small: contrast >= 7,
+  };
+}
+</script>
