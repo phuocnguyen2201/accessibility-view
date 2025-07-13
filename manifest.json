@@ -9,7 +9,10 @@
   "editorType": [
     "figma"
   ],
-  "ui": "ui.html",
+  "ui": {
+    "main":"./dist/ui.html",
+    "vision_simulation":"./dist/vision_simulation.html"
+  },
   "networkAccess": {
     "allowedDomains": [
       "none"

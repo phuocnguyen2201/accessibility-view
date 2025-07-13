@@ -7,7 +7,7 @@
 // full browser environment (See https://www.figma.com/plugin-docs/how-plugins-run).
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__html__);
+figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: 'Accessibility View' });
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
@@ -17,6 +17,7 @@ import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
 
 import { simulateVision } from '../features/vision-simulation';
 import { checkContrast } from '../features/color-contrast';
+import "./style.css";
 
 figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
 
@@ -43,6 +44,11 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
     return;
   }
 
+  if(msg.type === "testing"){
+    figma.showUI(__uiFiles__.vision_simulation,
+  { width: 400, height: 200, title: "My title" });
+  return;
+  }
   // Make sure to close the plugin when you're done. Otherwise the plugin will
   // keep running, which shows the cancel button at the bottom of the screen.
   figma.closePlugin();
