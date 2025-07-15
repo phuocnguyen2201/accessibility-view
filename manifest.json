@@ -11,7 +11,9 @@
   ],
   "ui": {
     "main":"./dist/ui.html",
-    "vision_simulation":"./dist/vision_simulation.html"
+    "vision_simulation":"./dist/vision_simulation.html",
+    "color_pattern":"./dist/color-pattern.html",
+    "color_contrast":"./dist/color-contrast.html"
   },
   "networkAccess": {
     "allowedDomains": [

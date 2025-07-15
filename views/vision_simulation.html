@@ -5,13 +5,35 @@
   </head>
   <body id='dark'>
     <div class="container">
- 
-      <button id="analysis">Protanopia</button>
-      <button id="testing">Deuteranopia</button>
-      
-      <button id="check-contrast">Tritanopia</button>
-      <div id="color-contrast-tool"><div id="contrastResult" style="margin-top: 1em;"></div></div>
+      <button id="back">Back</button>
+
+
+      <div id="color-contrast-tool">
+        <div id="contrastResult" style="margin-top: 1em;">      
+          <button id="protanopia">Protanopia</button>
+          <button id="deuteranopia">Deuteranopia</button>
+          <button id="tritanopia">Tritanopia</button>
+          <button id="achromatopsia">Achromatopsia</button>
+      </div></div>
     </div>
   </body>
 </html>
+
+<script type="module">
+ document.getElementById('protanopia').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'PROTANOPIA' } }, '*')
+  }
+  document.getElementById('deuteranopia').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'DEUTERANOPIA' } }, '*')
+  }
+  document.getElementById('tritanopia').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'TRITANOPIA' } }, '*')
+  }
+  document.getElementById('achromatopsia').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'ACHROMATOPSIA' } }, '*')
+  }
+  document.getElementById('back').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*')
+  }
+</script>
 

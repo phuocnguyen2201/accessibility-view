@@ -14,23 +14,16 @@ figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: 'Accessibility V
 // posted message.
 import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
 
-
-import { simulateVision } from '../features/vision-simulation';
+import {simulateVision} from '../features/vision-simulation';
 import { checkContrast } from '../features/color-contrast';
 import "./style.css";
 
 figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
 
-  if (msg.type === MESSAGE.REQ_ANALYSIS) {
-
-    // Get the selected node
-    const selection = figma.currentPage.selection;
-    if (!selection || selection.length === 0) {
-      figma.notify(NOTIFY_MESSAGES.SELECT_LAYER);
+  if (msg.type === MESSAGE.VIEW.VISION_SIMULATION) {
+    figma.showUI(__uiFiles__.vision_simulation,
+      { width: 450, height: 400, title: "Vision Simulation" });
       return;
-    }
-    simulateVision(selection[0]);
-    return;
   }
 
   if (msg.type === MESSAGE.REQ_CONTRAST) {
@@ -44,10 +37,31 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
     return;
   }
 
-  if(msg.type === "testing"){
-    figma.showUI(__uiFiles__.vision_simulation,
-  { width: 400, height: 200, title: "My title" });
-  return;
+  if (
+    [MESSAGE.COLOR_BLINDNESS.PROTANOPIA, MESSAGE.COLOR_BLINDNESS.PROTANOPIA, MESSAGE.COLOR_BLINDNESS.DEUTERANOPIA, MESSAGE.COLOR_BLINDNESS.ACHROMATOPSIA].includes(msg.type)
+  ) {
+    const selection = figma.currentPage.selection;
+    if (!selection || selection.length === 0) {
+      figma.notify(NOTIFY_MESSAGES.SELECT_LAYER);
+      return;
+    }
+    simulateVision(selection[0], msg.type);
+    return;
+  }
+
+  if(msg.type === MESSAGE.VIEW.COLOR_CONTRAST){
+    figma.showUI(__uiFiles__.color_contrast,{width : 400, height: 700, title: 'Accessibility View' });
+    return;
+  }
+
+  if(msg.type === MESSAGE.VIEW.AI_PATTERN){
+    figma.showUI(__uiFiles__.color_pattern,{width : 400, height: 700, title: 'Accessibility View' });
+    return;
+  }
+
+  if(msg.type === MESSAGE.BACK){
+    figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: 'Accessibility View' });
+    return;
   }
   // Make sure to close the plugin when you're done. Otherwise the plugin will
   // keep running, which shows the cancel button at the bottom of the screen.

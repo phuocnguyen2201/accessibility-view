@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+  </head>
+  <body id='dark'>
+    <div class="container">
+      <button id="back">Back</button>
+
+
+      <div id="color-contrast-tool">
+        <div id="contrastResult" style="margin-top: 1em;">      
+            <div id="color"></div>
+        </div>
+        </div>
+    </div>
+  </body>
+</html>
+
+<script type="module">
+ document.getElementById('back').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*')
+  }
+
+</script>
+

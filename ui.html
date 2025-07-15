@@ -6,8 +6,8 @@
   <body id='dark'>
     <div class="container">
  
-      <button id="analysis">Analysis</button>
-      <button id="testing">AI Color Pattern</button>
+      <button id="vision-simulation">Vision Simulation</button>
+      <button id="ai-color-pattern">AI Color Pattern</button>
       
       <button id="check-contrast">Check Color Contrast</button>
       <div id="color-contrast-tool"><div id="contrastResult" style="margin-top: 1em;"></div></div>
@@ -17,16 +17,16 @@
   
 <script type="module">
 
-  document.getElementById('analysis').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'REQ_ANALYSIS' } }, '*')
+  document.getElementById('vision-simulation').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'VISION_SIMULATION' } }, '*')
   }
   
   document.getElementById('check-contrast').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'REQ_CONSTRAST' } }, '*');
   };
 
-  document.getElementById('testing').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'testing' } },'*')
+  document.getElementById('ai-color-pattern').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'AI_PATTERN' } },'*')
   }
 
   // Listen for messages from the plugin

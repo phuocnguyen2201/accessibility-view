@@ -1,53 +1,55 @@
-export function simulateVision(node: SceneNode) {
+import { MESSAGE } from "../constants/constants";
 
-    // Get bounds of the selected node
-    const { x, y, width, height } = node;
-    const gap = 40;
-    const types = [
-      { key: 'protanopia', label: 'Protanopia' },
-      { key: 'deuteranopia', label: 'Deuteranopia' },
-      { key: 'tritanopia', label: 'Tritanopia' },
-      { key: 'achromatopsia', label: 'Achromatopsia' },
-    ];
-    const frames: FrameNode[] = [];
-    types.forEach((type, i) => {
-      const frame = figma.createFrame();
-      frame.x = x + (width + gap) * (i + 1);
-      frame.y = y;
-      frame.resize(width, height);
-      frame.clipsContent = true;
-      frame.name = type.label;
-      figma.currentPage.appendChild(frame);
-      const clone = node.clone();
-      clone.x = 0;
-      clone.y = 0;
-      frame.appendChild(clone);
-      adjustColorsForColorBlindnessType(clone, COLOR_BLINDNESS_MATRICES[type.key as keyof typeof COLOR_BLINDNESS_MATRICES]);
-      frames.push(frame);
-    });
-    figma.currentPage.selection = frames;
-    figma.viewport.scrollAndZoomIntoView(frames);
-    return;
+export function simulateVision(node: SceneNode, msg: string) {
+  // Get bounds of the selected node
+  const { x, y, width, height } = node;
+  const gap = 40;
+  const types = [
+    { key: MESSAGE.COLOR_BLINDNESS.PROTANOPIA, label: 'Protanopia' },
+    { key: MESSAGE.COLOR_BLINDNESS.DEUTERANOPIA, label: 'Deuteranopia' },
+    { key: MESSAGE.COLOR_BLINDNESS.TRITANOPIA, label: 'Tritanopia' },
+    { key: MESSAGE.COLOR_BLINDNESS.ACHROMATOPSIA, label: 'Achromatopsia' },
+  ];
+  const type = types.find(t => t.key === msg);
+  if (!type) return;
+
+  const frame = figma.createFrame();
+  frame.x = x + width + gap;
+  frame.y = y;
+  frame.resize(width, height);
+  frame.clipsContent = true;
+  frame.name = type.label;
+  figma.currentPage.appendChild(frame);
+
+  const clone = node.clone();
+  clone.x = 0;
+  clone.y = 0;
+  frame.appendChild(clone);
+  debugger;
+  adjustColorsForColorBlindnessType(clone, COLOR_BLINDNESS_MATRICES[type.key as keyof typeof COLOR_BLINDNESS_MATRICES]);
+
+  figma.currentPage.selection = [frame];
+  // figma.viewport.scrollAndZoomIntoView([frame]);
 }
 
 // Color blindness simulation matrices
 const COLOR_BLINDNESS_MATRICES = {
-    protanopia: [
+    PROTANOPIA: [
       [0.567, 0.433, 0],
       [0.558, 0.442, 0],
       [0, 0.242, 0.758],
     ],
-    deuteranopia: [
+    DEUTERANOPIA: [
       [0.625, 0.375, 0],
       [0.7, 0.3, 0],
       [0, 0.3, 0.7],
     ],
-    tritanopia: [
+    TRITANOPIA: [
       [0.95, 0.05, 0],
       [0, 0.433, 0.567],
       [0, 0.475, 0.525],
     ],
-    achromatopsia: [
+    ACHROMATOPSIA: [
       [0.299, 0.587, 0.114],
       [0.299, 0.587, 0.114],
       [0.299, 0.587, 0.114],
@@ -64,6 +66,7 @@ function applyColorMatrix(color: RGB, matrix: number[][]): RGB {
   }
   
 function adjustColorsForColorBlindnessType(node: SceneNode, matrix: number[][]) {
+  debugger;
     if ('fills' in node && Array.isArray(node.fills)) {
       const fills = node.fills as Paint[];
       const newFills = fills.map(fill => {
