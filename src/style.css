@@ -9,8 +9,8 @@
       }
       
       .container {
-        padding: 16px;
-        width: 370px;
+        padding: clamp(8px, 4vw, 32px);
+        min-width: 370px;
         align-items: center;
         justify-content: center;
       }
@@ -39,6 +39,7 @@
         transition: background 0.2s, color 0.2s, border 0.2s;
         width: 100%;
         min-height: 3rem;
+        font-size: 18px;
       }
       
       button:hover {

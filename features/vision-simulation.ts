@@ -1,17 +1,37 @@
-import { MESSAGE } from "../constants/constants";
+import { MESSAGE, NOTIFY_MESSAGES } from "../constants/constants";
 
 export function simulateVision(node: SceneNode, msg: string) {
   // Get bounds of the selected node
   const { x, y, width, height } = node;
   const gap = 40;
   const types = [
-    { key: MESSAGE.COLOR_BLINDNESS.PROTANOPIA, label: 'Protanopia' },
-    { key: MESSAGE.COLOR_BLINDNESS.DEUTERANOPIA, label: 'Deuteranopia' },
-    { key: MESSAGE.COLOR_BLINDNESS.TRITANOPIA, label: 'Tritanopia' },
-    { key: MESSAGE.COLOR_BLINDNESS.ACHROMATOPSIA, label: 'Achromatopsia' },
+    { key: MESSAGE.COLOR_BLINDNESS.KEY.PROTANOPIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.PROTANOPIA },
+    { key: MESSAGE.COLOR_BLINDNESS.KEY.DEUTERANOPIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.DEUTERANOPIA },
+    { key: MESSAGE.COLOR_BLINDNESS.KEY.TRITANOPIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.TRITANOPIA },
+    { key: MESSAGE.COLOR_BLINDNESS.KEY.ACHROMATOPSIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.ACHROMATOPSIA },
   ];
+
+  // If the selected node is a simulation frame, notify and return
+  if (
+    node.type === "FRAME" &&
+    types.some(t => t.label === node.name && msg.match(node.name))
+  ) {
+    debugger;
+    figma.notify(NOTIFY_MESSAGES.SELECT_LAYER_NOT_A_SIMULATION_FRAME);
+    return;
+  }
+
   const type = types.find(t => t.key === msg);
   if (!type) return;
+
+  // Check if a frame with the same name exists
+  const existingFrame = figma.currentPage.findOne(
+    n => n.type === "FRAME" && n.name === type.label
+  );
+  if (existingFrame) {
+    existingFrame.remove();
+    return;
+  }
 
   const frame = figma.createFrame();
   frame.x = x + width + gap;
@@ -30,6 +50,22 @@ export function simulateVision(node: SceneNode, msg: string) {
 
   figma.currentPage.selection = [frame];
   // figma.viewport.scrollAndZoomIntoView([frame]);
+}
+
+export function clearAllVisionSimulationFrames() {
+  const types = [
+    { key: MESSAGE.COLOR_BLINDNESS.KEY.PROTANOPIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.PROTANOPIA },
+    { key: MESSAGE.COLOR_BLINDNESS.KEY.DEUTERANOPIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.DEUTERANOPIA },
+    { key: MESSAGE.COLOR_BLINDNESS.KEY.TRITANOPIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.TRITANOPIA },
+    { key: MESSAGE.COLOR_BLINDNESS.KEY.ACHROMATOPSIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.ACHROMATOPSIA },
+  ];
+  const simulationLabels = types.map(t => t.label);
+  const framesToRemove = figma.currentPage.findAll(
+    n => n.type === "FRAME" && simulationLabels.includes(n.name)
+  );
+  for (const frame of framesToRemove) {
+    frame.remove();
+  }
 }
 
 // Color blindness simulation matrices

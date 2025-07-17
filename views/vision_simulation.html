@@ -6,14 +6,15 @@
   <body id='dark'>
     <div class="container">
       <button id="back">Back</button>
-
-
       <div id="color-contrast-tool">
-        <div id="contrastResult" style="margin-top: 1em;">      
+        <div id="contrastResult" style="margin-top: 1em;">   
+          <h3>Select a frame and choose one of options below to run the vision simulation</h2>
+             
           <button id="protanopia">Protanopia</button>
           <button id="deuteranopia">Deuteranopia</button>
           <button id="tritanopia">Tritanopia</button>
           <button id="achromatopsia">Achromatopsia</button>
+          <button id="clear">Clear All</button>
       </div></div>
     </div>
   </body>
@@ -34,6 +35,9 @@
   }
   document.getElementById('back').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*')
+  }
+  document.getElementById('clear').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'CLEAR' } }, '*')
   }
 </script>
 

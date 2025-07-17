@@ -7,27 +7,26 @@
 // full browser environment (See https://www.figma.com/plugin-docs/how-plugins-run).
 
 // This shows the HTML page in "ui.html".
-figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: 'Accessibility View' });
+figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
 
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
 import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
-
-import {simulateVision} from '../features/vision-simulation';
+import {clearAllVisionSimulationFrames, simulateVision} from '../features/vision-simulation';
 import { checkContrast } from '../features/color-contrast';
 import "./style.css";
 
 figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
 
+  //Open vision simulation view.
   if (msg.type === MESSAGE.VIEW.VISION_SIMULATION) {
     figma.showUI(__uiFiles__.vision_simulation,
-      { width: 450, height: 400, title: "Vision Simulation" });
+      { width: 400, height: 550, title: MESSAGE.WINDOW.VISION_SIMULATION });
       return;
   }
 
   if (msg.type === MESSAGE.REQ_CONTRAST) {
-
     const selection = figma.currentPage.selection;
     if (!selection || selection.length === 0) {
       figma.notify(NOTIFY_MESSAGES.SELECT_LAYER);
@@ -37,8 +36,12 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
     return;
   }
 
+  //Simulation the POV of color blindness.
   if (
-    [MESSAGE.COLOR_BLINDNESS.PROTANOPIA, MESSAGE.COLOR_BLINDNESS.PROTANOPIA, MESSAGE.COLOR_BLINDNESS.DEUTERANOPIA, MESSAGE.COLOR_BLINDNESS.ACHROMATOPSIA].includes(msg.type)
+    [MESSAGE.COLOR_BLINDNESS.KEY.PROTANOPIA, 
+      MESSAGE.COLOR_BLINDNESS.KEY.TRITANOPIA, 
+      MESSAGE.COLOR_BLINDNESS.KEY.DEUTERANOPIA, 
+      MESSAGE.COLOR_BLINDNESS.KEY.ACHROMATOPSIA].includes(msg.type)
   ) {
     const selection = figma.currentPage.selection;
     if (!selection || selection.length === 0) {
@@ -49,18 +52,25 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
     return;
   }
 
-  if(msg.type === MESSAGE.VIEW.COLOR_CONTRAST){
-    figma.showUI(__uiFiles__.color_contrast,{width : 400, height: 700, title: 'Accessibility View' });
+  if(msg.type === MESSAGE.CLEAR){
+    clearAllVisionSimulationFrames();
     return;
   }
 
+  //Check contrast
+  if(msg.type === MESSAGE.VIEW.COLOR_CONTRAST){
+    figma.showUI(__uiFiles__.color_contrast,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
+    return;
+  }
+
+  //Open the ai gen color pattern.
   if(msg.type === MESSAGE.VIEW.AI_PATTERN){
-    figma.showUI(__uiFiles__.color_pattern,{width : 400, height: 700, title: 'Accessibility View' });
+    figma.showUI(__uiFiles__.color_pattern,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
     return;
   }
 
   if(msg.type === MESSAGE.BACK){
-    figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: 'Accessibility View' });
+    figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
     return;
   }
   // Make sure to close the plugin when you're done. Otherwise the plugin will

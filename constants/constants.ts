@@ -11,6 +11,7 @@ export const BUTTON_IDS = {
   export const NOTIFY_MESSAGES = {
     INVALID_RECTANGLES: 'Invalid number of rectangles.',
     SELECT_LAYER: 'Please select a layer to analyze.',
+    SELECT_LAYER_NOT_A_SIMULATION_FRAME: 'Please select a different frame (not a simulation frame)'
   };
 
   export const COLORS = {
@@ -23,14 +24,26 @@ export const BUTTON_IDS = {
     RES_CONTRAST : 'RES_CONSTRAST',
 
     BACK : 'BACK',
-    COLOR_BLINDNESS: {    
-      PROTANOPIA : 'PROTANOPIA',
+    CLEAR: 'CLEAR',
+    COLOR_BLINDNESS: {
+      KEY:{ 
+        PROTANOPIA : 'PROTANOPIA',
 
-      DEUTERANOPIA : 'DEUTERANOPIA',
-  
-      TRITANOPIA : 'TRITANOPIA',
-  
-      ACHROMATOPSIA : 'ACHROMATOPSIA',
+        DEUTERANOPIA : 'DEUTERANOPIA',
+    
+        TRITANOPIA : 'TRITANOPIA',
+    
+        ACHROMATOPSIA : 'ACHROMATOPSIA',},
+      LABEL:{
+        PROTANOPIA : 'Protanopia',
+
+        DEUTERANOPIA : 'Deuteranopia',
+    
+        TRITANOPIA : 'Tritanopia',
+    
+        ACHROMATOPSIA : 'Achromatopsia',
+      }  
+     
     },
 
 
@@ -38,6 +51,12 @@ export const BUTTON_IDS = {
       AI_PATTERN : 'AI_PATTERN',
       COLOR_CONTRAST: 'COLOR_CONTRAST',
       VISION_SIMULATION: 'VISION_SIMULATION'
+    },
+
+    WINDOW:{
+      MAIN : 'Accessibility View',
+      COLOR_CONTRAST: 'COLOR_CONTRAST',
+      VISION_SIMULATION: 'Vision Simulation'
     }
 
 }
