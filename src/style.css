@@ -198,3 +198,13 @@
   color: #666;
   margin-top: 0.5em;
 }
+
+.color-picker{
+  border: none;
+  border-radius: 5%;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  min-width: 54px;
+  min-height: 54px;
+}

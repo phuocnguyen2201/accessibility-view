@@ -29,12 +29,12 @@
     const resultDiv = document.getElementById('contrastResult');
     resultDiv.innerHTML = `
       <div class="contrast-flex-row">
-        <div style="text-align:center">
-          <div class="contrast-color-swatch" style="background: ${frameColor};"></div>
+        <div style="text-align:center; width:100%">
+          <input class="color-picker" type="color" id="colorPicker" name="colorPicker" value="${frameColor}">
           <div class="contrast-color-code">${frameColor.toUpperCase()}</div>
         </div>
-        <div style="text-align:center">
-          <div class="contrast-color-swatch" style="background: ${textColor};"></div>
+        <div style="text-align:center; width:100%">
+          <div><input class="color-picker" type="color" id="colorPicker" name="colorPicker" value="${textColor}"></div>
           <div class="contrast-color-code">${textColor.toUpperCase()}</div>
         </div>
       </div>
@@ -50,25 +50,20 @@
             <td class='contrast-table-row-label'>Large Text</td>
             <td style='text-align:center;'>${levels.AA_large ? '✅' : '❌'}</td>
             <td style='text-align:center;'>${levels.AAA_large ? '✅' : '❌'}</td>
-            <td></td>
           </tr>
           <tr>
             <td class='contrast-table-row-label'>Small Text</td>
             <td style='text-align:center;'>${levels.AA_small ? '✅' : '❌'}</td>
             <td style='text-align:center;'>${levels.AAA_small ? '✅' : '❌'}</td>
-            <td></td>
           </tr>
           <tr>
-            <td class='contrast-table-row-label'>AA</td>
+            <td class='contrast-table-row-label' rowspan="2">Required Ratio</td>
             <td style='text-align:center;'>3:1</td>
             <td style='text-align:center;'>4.5:1</td>
-            <td></td>
           </tr>
           <tr>
-            <td class='contrast-table-row-label'>AAA</td>
             <td style='text-align:center;'>4.5:1</td>
             <td style='text-align:center;'>7:1</td>
-            <td></td>
           </tr>
         </table>
         <div class="contrast-table-note">Large text: 18pt+ or 14pt+ bold</div>
