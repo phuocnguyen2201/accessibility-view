@@ -15,6 +15,7 @@ figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.M
 import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
 import {clearAllVisionSimulationFrames, simulateVision} from '../features/vision-simulation';
 import { checkContrast } from '../features/color-contrast';
+import { fetchColormindPalette} from '../features/color-pattern';
 import "./style.css";
 
 figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
@@ -26,14 +27,10 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
       return;
   }
 
-  if (msg.type === MESSAGE.REQ_CONTRAST) {
-    const selection = figma.currentPage.selection;
-    if (!selection || selection.length === 0) {
-      figma.notify(NOTIFY_MESSAGES.SELECT_LAYER);
+  if (msg.type === MESSAGE.CHECK_CONTRAST) {
+    figma.showUI(__uiFiles__.color_contrast,
+      { width: 400, height: 550, title: MESSAGE.WINDOW.COLOR_CONTRAST });
       return;
-    }
-    checkContrast(selection[0]);
-    return;
   }
 
   //Simulation the POV of color blindness.
@@ -59,13 +56,22 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
 
   //Check contrast
   if(msg.type === MESSAGE.VIEW.COLOR_CONTRAST){
-    figma.showUI(__uiFiles__.color_contrast,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
+    figma.showUI(__uiFiles__.color_contrast,{width : 400, height: 700, title: MESSAGE.WINDOW.COLOR_CONTRAST });
+    const selection = figma.currentPage.selection;
+    if (selection && selection.length === 1 && selection[0].type === 'FRAME') {
+      checkContrast(selection[0]);
+    }
     return;
   }
 
   //Open the ai gen color pattern.
   if(msg.type === MESSAGE.VIEW.AI_PATTERN){
     figma.showUI(__uiFiles__.color_pattern,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
+    return;
+  }
+
+  if(msg.type === 'GENERATE'){
+    fetchColormindPalette();
     return;
   }
 
@@ -77,6 +83,15 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
   // keep running, which shows the cancel button at the bottom of the screen.
   figma.closePlugin();
 };
+
+// Listen for selection changes and auto-check contrast if a frame is selected
+figma.on('selectionchange', () => {
+  const selection = figma.currentPage.selection;
+  if (selection && selection.length === 1 && selection[0].type === 'FRAME') {
+    checkContrast(selection[0]);
+  }
+  return;
+});
 
 
 

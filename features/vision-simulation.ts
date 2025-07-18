@@ -11,16 +11,6 @@ export function simulateVision(node: SceneNode, msg: string) {
     { key: MESSAGE.COLOR_BLINDNESS.KEY.ACHROMATOPSIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.ACHROMATOPSIA },
   ];
 
-  // If the selected node is a simulation frame, notify and return
-  if (
-    node.type === "FRAME" &&
-    types.some(t => t.label === node.name && msg.match(node.name))
-  ) {
-    debugger;
-    figma.notify(NOTIFY_MESSAGES.SELECT_LAYER_NOT_A_SIMULATION_FRAME);
-    return;
-  }
-
   const type = types.find(t => t.key === msg);
   if (!type) return;
 
@@ -45,7 +35,7 @@ export function simulateVision(node: SceneNode, msg: string) {
   clone.x = 0;
   clone.y = 0;
   frame.appendChild(clone);
-  debugger;
+
   adjustColorsForColorBlindnessType(clone, COLOR_BLINDNESS_MATRICES[type.key as keyof typeof COLOR_BLINDNESS_MATRICES]);
 
   figma.currentPage.selection = [frame];

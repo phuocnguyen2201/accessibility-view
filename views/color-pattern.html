@@ -12,6 +12,7 @@
         <div id="contrastResult" style="margin-top: 1em;">      
             <div id="color"></div>
         </div>
+        <button id="generate">Generate</button>
         </div>
     </div>
   </body>
@@ -21,6 +22,15 @@
  document.getElementById('back').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*')
   }
-
+  document.getElementById('generate').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: 'GENERATE' } }, '*')
+  }
+  window.onmessage = (event) => {
+    const msg = event.data.pluginMessage;
+    if (!msg || msg.type !== 'PATTERN') return;
+    const data = msg;
+    const resultDiv = document.getElementById('color');
+    resultDiv.innerHTML= `${data}`;
+  };
 </script>
 

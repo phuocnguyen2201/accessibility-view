@@ -10,7 +10,9 @@
       <button id="ai-color-pattern">AI Color Pattern</button>
       
       <button id="check-contrast">Check Color Contrast</button>
-      <div id="color-contrast-tool"><div id="contrastResult" style="margin-top: 1em;"></div></div>
+      <div id="color-contrast-tool">
+        <div id="contrastResult" style="margin-top: 1em;"></div>
+      </div>
     </div>
   </body>
 </html>
@@ -22,7 +24,7 @@
   }
   
   document.getElementById('check-contrast').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'REQ_CONSTRAST' } }, '*');
+    parent.postMessage({ pluginMessage: { type: 'COLOR_CONTRAST' } }, '*');
   };
 
   document.getElementById('ai-color-pattern').onclick = () => {
@@ -31,32 +33,8 @@
 
   // Listen for messages from the plugin
   window.onmessage = (event) => {
-    const msg = event.data.pluginMessage;
-    if (!msg || msg.type !== 'RES_CONSTRAST') return;
-    const { frameColor, textColor, contrast, levels} = msg;
 
-    const resultDiv = document.getElementById('contrastResult');
-    resultDiv.innerHTML = `
-      <div style="display: flex; gap: 2em; align-items: center;">
-        <div style="text-align:center">
-          <div style="width: 60px; height: 60px; background: ${frameColor}; border: 1px solid #ccc; margin: 0 auto;"></div>
-          <div style="margin-top: 0.5em; font-family: monospace;">${frameColor.toUpperCase()}</div>
-        </div>
-        <div style="text-align:center">
-          <div style="width: 60px; height: 60px; background: ${textColor}; border: 1px solid #ccc; margin: 0 auto;"></div>
-          <div style="margin-top: 0.5em; font-family: monospace;">${textColor.toUpperCase()}</div>
-        </div>
-      </div>
-      <div style="margin-top: 1em; font-size: 1.2em;">Contrast Ratio: <b>${contrast.toFixed(2)}:1</b></div>
-      <div style="margin-top: 1em;">
-        <table style="border-collapse: collapse;">
-          <tr><th></th><th style='padding:0 1em;'>AA</th><th style='padding:0 1em;'>AAA</th></tr>
-          <tr><td style='padding-right:1em;'>Large Text</td><td style='text-align:center;'>${levels.AA_large ? '✅' : '❌'}</td><td style='text-align:center;'>${levels.AAA_large ? '✅' : '❌'}</td></tr>
-          <tr><td style='padding-right:1em;'>Small Text</td><td style='text-align:center;'>${levels.AA_small ? '✅' : '❌'}</td><td style='text-align:center;'>${levels.AAA_small ? '✅' : '❌'}</td></tr>
-        </table>
-        <div style="font-size:0.9em; color:#666; margin-top:0.5em;">Large text: 18pt+ or 14pt+ bold</div>
-      </div>
-    `;
+
   };
 
 

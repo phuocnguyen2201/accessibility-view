@@ -20,11 +20,12 @@ export const BUTTON_IDS = {
   };
   
   export const MESSAGE = {
-    REQ_CONTRAST : 'REQ_CONSTRAST',
+    CHECK_CONTRAST : 'CHECK_CONTRAST',
     RES_CONTRAST : 'RES_CONSTRAST',
 
     BACK : 'BACK',
     CLEAR: 'CLEAR',
+    PATTERN: 'PATTERN',
     COLOR_BLINDNESS: {
       KEY:{ 
         PROTANOPIA : 'PROTANOPIA',
@@ -55,7 +56,7 @@ export const BUTTON_IDS = {
 
     WINDOW:{
       MAIN : 'Accessibility View',
-      COLOR_CONTRAST: 'COLOR_CONTRAST',
+      COLOR_CONTRAST: 'Check Color Contrast',
       VISION_SIMULATION: 'Vision Simulation'
     }
 

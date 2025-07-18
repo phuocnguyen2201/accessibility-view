@@ -108,6 +108,10 @@
         padding: 0.3em 0.7em;
         transition: border-color 0.2s;
       }
+
+      table {
+        width: 100%;
+      }
     
       /* Dark mode styles */
       @media (prefers-color-scheme: dark) {
@@ -156,3 +160,41 @@
       body.dark table, body.dark th, body.dark td {
         border-color: #444 !important;
       }
+
+.contrast-flex-row {
+  display: flex;
+  gap: 2em;
+  align-items: center;
+  min-width: 100%;
+}
+
+.contrast-color-swatch {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #ccc;
+  margin: 0 auto;
+}
+
+.contrast-color-code {
+  margin-top: 0.9em;
+  font-family: monospace;
+}
+
+.contrast-ratio {
+  margin-top: 1em;
+  font-size: 1.2em;
+}
+
+.contrast-table-cell-padding {
+  padding: 0 1em;
+}
+
+.contrast-table-row-label {
+  padding-right: 1em;
+}
+
+.contrast-table-note {
+  font-size: 0.9em;
+  color: #666;
+  margin-top: 0.5em;
+}
