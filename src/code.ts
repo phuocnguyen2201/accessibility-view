@@ -18,6 +18,7 @@ import { checkContrast } from '../features/color-contrast';
 import { fetchColormindPalette} from '../features/color-pattern';
 import "./style.css";
 
+let pageIsOpening: boolean = false;
 figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
 
   //Open vision simulation view.
@@ -57,6 +58,7 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
   //Check contrast
   if(msg.type === MESSAGE.VIEW.COLOR_CONTRAST){
     figma.showUI(__uiFiles__.color_contrast,{width : 400, height: 700, title: MESSAGE.WINDOW.COLOR_CONTRAST });
+    pageIsOpening = true;
     const selection = figma.currentPage.selection;
     if (selection && selection.length === 1 && selection[0].type === 'FRAME') {
       checkContrast(selection[0]);
@@ -77,6 +79,7 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
 
   if(msg.type === MESSAGE.BACK){
     figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
+    pageIsOpening = false;
     return;
   }
   // Make sure to close the plugin when you're done. Otherwise the plugin will
@@ -86,6 +89,8 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
 
 // Listen for selection changes and auto-check contrast if a frame is selected
 figma.on('selectionchange', () => {
+  if(!pageIsOpening) return;
+
   const selection = figma.currentPage.selection;
   if (selection && selection.length === 1 && selection[0].type === 'FRAME') {
     checkContrast(selection[0]);
