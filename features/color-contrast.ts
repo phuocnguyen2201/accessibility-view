@@ -26,6 +26,14 @@ import { COLORS, MESSAGE } from '../constants/constants';
     figma.ui.postMessage({ type: MESSAGE.RES_CONTRAST, frameColor, textColor, contrast, levels });
  }
 
+export function checkContrastWithOnChangeColors(frameColor: string, textColor: string) {
+  debugger;
+  // Calculate the contrast level and wcag standard.
+  let contrast = getContrastRatio(frameColor, textColor);
+  let levels = getWcagLevels(contrast);
+  figma.ui.postMessage({ type: MESSAGE.RES_CONTRAST, frameColor, textColor, contrast, levels });
+}
+
 function rgbToHex(r: number, g: number, b: number): string {
     const to255 = (v: number) => Math.round(v * 255);
     function pad2(x: string) { return x.length === 1 ? '0' + x : x; }

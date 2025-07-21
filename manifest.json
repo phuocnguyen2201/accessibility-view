@@ -17,7 +17,7 @@
   },
   "networkAccess": {
     "allowedDomains": [
-      "none"
+      "http://colormind.io/"
     ]
   }
 }

@@ -26,6 +26,8 @@ export const BUTTON_IDS = {
     BACK : 'BACK',
     CLEAR: 'CLEAR',
     PATTERN: 'PATTERN',
+    CHANGE_COLOR: 'CHANGE-COLOR',
+    
     COLOR_BLINDNESS: {
       KEY:{ 
         PROTANOPIA : 'PROTANOPIA',

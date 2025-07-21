@@ -19,7 +19,7 @@ import { fetchColormindPalette} from '../features/color-pattern';
 import "./style.css";
 
 let pageIsOpening: boolean = false;
-figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
+figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string, frameColor: string, value: string, count?: number}) => {
 
   //Open vision simulation view.
   if (msg.type === MESSAGE.VIEW.VISION_SIMULATION) {
@@ -80,6 +80,16 @@ figma.ui.onmessage =  (msg: {type: string, count?: number}) => {
   if(msg.type === MESSAGE.BACK){
     figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
     pageIsOpening = false;
+    return;
+  }
+
+  if(msg.type === MESSAGE.CHANGE_COLOR){
+
+    const { checkContrastWithOnChangeColors } = require('../features/color-contrast');
+    const frameColor = msg.colorType === 'frame'? msg.frameColor = msg.value: msg.frameColor;
+    const textColor = msg.colorType === 'text'? msg.textColor = msg.value: msg.textColor;
+
+    checkContrastWithOnChangeColors(frameColor, textColor);
     return;
   }
   // Make sure to close the plugin when you're done. Otherwise the plugin will

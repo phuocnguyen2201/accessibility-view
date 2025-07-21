@@ -28,7 +28,7 @@
   window.onmessage = (event) => {
     const msg = event.data.pluginMessage;
     if (!msg || msg.type !== 'PATTERN') return;
-    const data = msg;
+    const {data} = msg;
     const resultDiv = document.getElementById('color');
     resultDiv.innerHTML= `${data}`;
   };
