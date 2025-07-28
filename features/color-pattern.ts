@@ -1,11 +1,13 @@
 import { MESSAGE } from "../constants/constants";
 
-export async function fetchColormindPalette() {
-  const body = {method: 'POST',};
-  //const apiKey: string = process.env.GOOGLE_GEMINI_API_KEY?.toString()??'';
-  const response = await fetch(
+export function fetchColormindPalette() {
+  let loading: boolean = true;
+  figma.ui.postMessage({ type: MESSAGE.LOADING, loading});
+
+  const response = fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`,
     {
+    
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -21,8 +23,16 @@ export async function fetchColormindPalette() {
           },
         ],
       }),
-    });
-    debugger;
-    console.log(response)
-  figma.ui.postMessage({ type: MESSAGE.PATTERN, response });
+    })
+    .then((res)=>{ 
+      res.json();
+    })
+    .then((data)=>{
+      debugger;
+      figma.ui.postMessage({ type: MESSAGE.PATTERN, data });
+    }).finally(()=>{
+      loading = false;
+      figma.ui.postMessage({ type: MESSAGE.LOADING, loading});
+    })
+  
 }

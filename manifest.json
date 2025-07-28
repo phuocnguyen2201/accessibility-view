@@ -17,7 +17,8 @@
   },
   "networkAccess": {
     "allowedDomains": [
-      "http://colormind.io/"
+      "http://colormind.io/",
+      "https://generativelanguage.googleapis.com"
     ]
   }
 }

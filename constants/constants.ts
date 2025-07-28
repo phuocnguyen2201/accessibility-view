@@ -27,6 +27,7 @@ export const BUTTON_IDS = {
     CLEAR: 'CLEAR',
     PATTERN: 'PATTERN',
     CHANGE_COLOR: 'CHANGE-COLOR',
+    LOADING: 'LOADING',
     
     COLOR_BLINDNESS: {
       KEY:{ 
