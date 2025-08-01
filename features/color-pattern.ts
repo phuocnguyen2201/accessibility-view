@@ -17,7 +17,7 @@ export function fetchColormindPalette() {
           {
             parts: [
               {
-                text: 'Explain how AI works in a few words',
+                text: 'Give 4 random colors pattern with hex code, just the hex code, make it an array',
               },
             ],
           },
@@ -25,11 +25,13 @@ export function fetchColormindPalette() {
       }),
     })
     .then((res)=>{ 
-      res.json();
+      return res.json();
     })
     .then((data)=>{
       debugger;
-      figma.ui.postMessage({ type: MESSAGE.PATTERN, data });
+      console.log(data.candidates[0].content.parts[0].text)
+      const listColor = data.candidates[0].content.parts[0].text
+      figma.ui.postMessage({ type: MESSAGE.PATTERN, listColor });
     }).finally(()=>{
       loading = false;
       figma.ui.postMessage({ type: MESSAGE.LOADING, loading});
