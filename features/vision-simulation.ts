@@ -1,4 +1,4 @@
-import { MESSAGE, NOTIFY_MESSAGES } from "../constants/constants";
+import { FILL_TYPES, MESSAGE, NOTIFY_MESSAGES } from "../constants/constants";
 
 // Color blindness simulation matrices (for linear color space)
 const COLOR_BLINDNESS_MATRICES = {
@@ -44,7 +44,12 @@ function adjustColorsForColorBlindnessType(node: SceneNode, matrix: number[][]) 
           if (!(r === 1 && g === 1 && b === 1)) {
             return { ...fill, color: applyColorMatrix(fill.color, matrix) };
           }
-        } else if (fill.type === 'GRADIENT_LINEAR' || fill.type === 'GRADIENT_RADIAL') {
+        } else if (
+          [FILL_TYPES.GRADIENT_ANGULAR, 
+            FILL_TYPES.GRADIENT_DIAMOND, 
+            FILL_TYPES.GRADIENT_LINEAR, 
+            FILL_TYPES.GRADIENT_RADIAL].includes(fill.type)
+          ){
           // Handle gradient fills
           const gradientFill = fill as GradientPaint;
           const newGradientStops = gradientFill.gradientStops.map(stop => ({

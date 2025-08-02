@@ -14,7 +14,7 @@ figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.M
 // posted message.
 import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
 import {clearAllVisionSimulationFrames, simulateVision} from '../features/vision-simulation';
-import { checkContrast } from '../features/color-contrast';
+import { checkContrast, checkContrastWithOnChangeColors } from '../features/color-contrast';
 import { fetchColormindPalette} from '../features/color-pattern';
 import "./style.css";
 
@@ -57,7 +57,7 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
 
   //Check contrast
   if(msg.type === MESSAGE.VIEW.COLOR_CONTRAST){
-    figma.showUI(__uiFiles__.color_contrast,{width : 400, height: 700, title: MESSAGE.WINDOW.COLOR_CONTRAST });
+    figma.showUI(__uiFiles__.color_contrast, { width : 400, height: 700, title: MESSAGE.WINDOW.COLOR_CONTRAST });
     pageIsOpening = true;
     const selection = figma.currentPage.selection;
     if (selection && selection.length === 1 && selection[0].type === 'FRAME') {
@@ -68,24 +68,23 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
 
   //Open the ai gen color pattern.
   if(msg.type === MESSAGE.VIEW.AI_PATTERN){
-    figma.showUI(__uiFiles__.color_pattern,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
+    figma.showUI(__uiFiles__.color_pattern, { width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
     return;
   }
 
-  if(msg.type === 'GENERATE'){
+  if(msg.type === MESSAGE.GENERATE){
     fetchColormindPalette();
     return;
   }
 
   if(msg.type === MESSAGE.BACK){
-    figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
+    figma.showUI(__uiFiles__.main, { width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
     pageIsOpening = false;
     return;
   }
 
   if(msg.type === MESSAGE.CHANGE_COLOR){
 
-    const { checkContrastWithOnChangeColors } = require('../features/color-contrast');
     const frameColor = msg.colorType === 'frame'? msg.frameColor = msg.value: msg.frameColor;
     const textColor = msg.colorType === 'text'? msg.textColor = msg.value: msg.textColor;
 
@@ -98,7 +97,7 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
 };
 
 // Listen for selection changes and auto-check contrast if a frame is selected
-figma.on('selectionchange', () => {
+figma.on("selectionchange", () => {
   if(!pageIsOpening) return;
 
   const selection = figma.currentPage.selection;

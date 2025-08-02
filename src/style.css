@@ -24,13 +24,13 @@
       button {
         background-color: #0d99ff;
         border: none;
-        color: #ffffff;
+        color: var(--figma-color-text-secondary);
         padding: 10px 16px;
         border-radius: 6px;
         cursor: pointer;
         font-weight: 500;
         transition: background-color 0.2s ease;
-        background: #f3f3f3;
+        background: var(--figma-color-bg);
         color: #222;
         border: 1px solid #bbb;
         border-radius: 4px;
@@ -43,11 +43,11 @@
       }
       
       button:hover {
-        background-color: #007be5;
+        background-color: var(--figma-color-bg-brand-hover);
       }
       
       button:active {
-        background-color: #0060c1;
+        background-color: var(--figma-color-bg-brand-pressed);
       }
       
       input[type="text"],
