@@ -28,9 +28,17 @@
   window.onmessage = (event) => {
     const msg = event.data.pluginMessage;
     if (!msg || msg.type !== 'PATTERN') return;
-    const {listColor} = msg;
-    const resultDiv = document.getElementById('color');
-    resultDiv.innerHTML= `${listColor}`;
+    const {listColor, loading} = msg;
+
+    if(loading === 'true'){
+      const resultDiv = document.getElementById('color');
+      resultDiv.innerHTML= `Loading...`;
+    }
+    else{
+      const resultDiv = document.getElementById('color');
+      resultDiv.innerHTML= `${listColor}`;
+    }
+   
   };
 </script>
 
