@@ -73,11 +73,13 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
   }
 
   if(msg.type === MESSAGE.GENERATE){
+    debugger;
     fetchColormindPalette();
     return;
   }
 
   if(msg.type === MESSAGE.BACK){
+    debugger;
     figma.showUI(__uiFiles__.main, { width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
     pageIsOpening = false;
     return;

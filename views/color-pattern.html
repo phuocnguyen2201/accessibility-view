@@ -27,12 +27,21 @@
   }
   window.onmessage = (event) => {
     const msg = event.data.pluginMessage;
-    if (!msg || msg.type !== 'PATTERN') return;
-    const {listColor, loading} = msg;
+    if (!msg || msg.type !== 'PATTERN' || msg.type !== 'LOADING') return;
+    const {loading} = msg;
 
     if(loading === 'true'){
       const resultDiv = document.getElementById('color');
-      resultDiv.innerHTML= `Loading...`;
+      resultDiv.innerHTML= `<div class="dot-spinner">
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+        <div class="dot-spinner__dot"></div>
+    </div>`;
     }
     else{
       const resultDiv = document.getElementById('color');
