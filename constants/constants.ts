@@ -1,4 +1,4 @@
-export const BUTTON_IDS = {
+  export const BUTTON_IDS = {
     ANALYSIS: 'analysis',
     CHECK_CONTRAST: 'check-contrast',
   };
@@ -11,7 +11,8 @@ export const BUTTON_IDS = {
   export const NOTIFY_MESSAGES = {
     INVALID_RECTANGLES: 'Invalid number of rectangles.',
     SELECT_LAYER: 'Please select a layer to analyze.',
-    SELECT_LAYER_NOT_A_SIMULATION_FRAME: 'Please select a different frame (not a simulation frame)'
+    SELECT_LAYER_NOT_A_SIMULATION_FRAME: 'Please select a different frame (not a simulation frame)',
+    HEX_CODE_COPIED_TO_CLIPBOARD: 'The Hex code copied to your clipboard'
   };
 
   export const COLORS = {
@@ -35,6 +36,8 @@ export const BUTTON_IDS = {
     CHANGE_COLOR: 'CHANGE-COLOR',
     LOADING: 'LOADING',
     GENERATE: 'GENERATE',
+    URL: 'URL',
+    NOTIFY: 'NOTIFY',
     
     COLOR_BLINDNESS: {
       KEY:{ 
@@ -70,4 +73,7 @@ export const BUTTON_IDS = {
       VISION_SIMULATION: 'Vision Simulation'
     }
 
-}
+  }
+  export const COLOR_URL = {
+    PROXY:"https://figma-proxy-rho.vercel.app/api/proxy"
+  }

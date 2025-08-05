@@ -7,35 +7,23 @@
     <div class="container">
       <button id="back">Back</button>
 
-
-      <div id="color">
+      <div id="color-contrast-tool">
+        <div id="color-display"></div>
         <div id="contrastResult" style="margin-top: 1em;">      
-            <div id="color"></div>
+            
         </div>
-        <button id="generate">Generate</button>
-        </div>
+        <button id="generate"> Generate</button>
+      </div>
     </div>
   </body>
 </html>
 
 <script type="module">
-  let resultDiv = document.getElementById('color');
-    resultDiv.innerHTML= `<div class="dot-spinner">
-      <div class="dot-spinner__dot"></div>
-      <div class="dot-spinner__dot"></div>
-      <div class="dot-spinner__dot"></div>
-      <div class="dot-spinner__dot"></div>
-      <div class="dot-spinner__dot"></div>
-      <div class="dot-spinner__dot"></div>
-      <div class="dot-spinner__dot"></div>
-      <div class="dot-spinner__dot"></div>
-  </div>`;
-  //fetchTheColors();
-  resultDiv.innerHTML = parseColorArray("```\n[\"#A8D5BA\", \"#F4B393\", \"#D6D2C4\", \"#3F72AF\"]\n```\n");
-
-
-
- document.getElementById('back').onclick = () => {
+  let resultDiv = document.getElementById('color-display');
+  let loadingDiv = document.getElementById('generate');
+  let staticUrl = '';
+  
+  document.getElementById('back').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*')
   }
   document.getElementById('generate').onclick = () => {
@@ -50,42 +38,80 @@
 
   function fetchTheColors(){
     try{
+      loadingScreen();
+
+      if(!vefiryTheUrl(staticUrl)) return;
+
       const response = fetch(
-        `https://figma-proxy-rho.vercel.app/api/proxy`,
+        staticUrl,
         {
           method: 'GET',
           headers: { "Content-Type": "application/json" },
         })
-        .then((res) => {return res.json()})
+        .then((res) => { return res.json();})
         .then((data) => {
-          let colorDiv = document.getElementById('color');
+
           const colors = data.colors;
 
-          colorDiv.innerHTML = hasAtLeastFourHexColors(colors)? parseColorArray(colors): 'Something wrong, try again in few seconds'
+          resultDiv.innerHTML = hasAtLeastFourHexColors(colors)? parseColorArray(colors): 'Something wrong, try again in few seconds'
 
+        }).finally(()=>{
+          loadingDiv.innerHTML = 'Generate';
         });
     }catch(e){
       console.log("Error")
-    }finally{
-      resultDiv.innerHTML = 'Generate';
     }
   }
 
   function parseColorArray(input) {
     try {
-      input = "```\n[\"#A8D5BA\", \"#F4B393\", \"#D6D2C4\", \"#3F72AF\"]\n```\n";
       const hexRegex = /#([A-Fa-f0-9]{6})/g;
       const matches = input.match(hexRegex);
       let display_data = ``;
-      matches.forEach((item)=>{
-        display_data += `<div id='display-area-${item} style={ background-color: ${item}; width: 100%; height: 10px; margin-bottom: 2rem}'></div>`;
+      matches.forEach((item, index)=>{
+        display_data += `<button id='display-area-${index}' title='${item}' style=" background-color: ${item}; width: 100%; height: 4rem; margin-bottom: 1rem"></button>`;
       });
-      console.log(display_data)
+      
+        // Add event listeners after the HTML is inserted
+      setTimeout(() => {
+        matches.forEach((item, index) => {
+          const button = document.getElementById(`display-area-${index}`);
+          if (button) {
+            button.addEventListener('click', () => buttonOnClick(`display-area-${index}`));
+          }
+        });
+      }, 0);
+
       return display_data;
     } catch (err) {
       console.error("Failed to parse input:", err.message);
       return [];
     }
+  }
+  function loadingScreen(){
+   
+    loadingDiv.innerHTML= `<span class="loader"></span> Generate`;
+  }
+
+  function vefiryTheUrl(url){
+    const regex = /^https:\/\/.*api\/proxy/;
+    return regex.test(url);
+  }
+
+  function buttonOnClick(id){
+    const button = document.getElementById(id);
+    if(button !== null && button !==undefined){
+      const hexCode = button.title;
+      parent.postMessage({ pluginMessage: { type: 'NOTIFY', hexCode } }, '*')
+    }
+  }
+
+  window.onmessage = (event) => {
+    const msg = event.data.pluginMessage;
+    if (!msg || msg.type !== 'URL') return;
+    const { url} = msg;
+    staticUrl = vefiryTheUrl(url)? url: '';
+    fetchTheColors();
   }
 </script>
 

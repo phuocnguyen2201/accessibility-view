@@ -53,7 +53,7 @@ function rgbToHex(r: number, g: number, b: number): string {
     return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
   }
 
-  function hexToRgb(hex: string) {
+  export function hexToRgb(hex: string) {
     hex = hex.replace('#', '');
     if (hex.length === 3) {
       hex = hex.split('').map((x) => x + x).join('');
