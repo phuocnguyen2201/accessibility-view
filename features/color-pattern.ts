@@ -1,35 +1,34 @@
 import { MESSAGE } from "../constants/constants";
 
-export function fetchColormindPalette() {
-  debugger;
+export async function fetchColormindPalette() {
+
   let loading: string = 'true';
-  figma.ui.postMessage({ type: MESSAGE.LOADING, loading});
+  let colors = ['#A8D5BA'];
+  //figma.ui.postMessage({ type: MESSAGE.LOADING, loading, colors});
+  try {
+      const response = await fetch(
+      `https://figma-proxy-rho.vercel.app/api/proxy`,
+      {
+        method: 'GET',
+        headers: { "Content-Type": "application/json" },
+      })
 
-  //const headers = {'content-type': 'application/json' ,'X-goog-api-key': `${process.env.GOOGLE_GEMINI_API_KEY}`};
-  //const content = [{parts: [{text: 'Give 4 random colors pattern with hex code, just the hex code, make it an array'}]}];
+      if(!response.ok){
+        throw new Error('Failed to fetch colors');
+      }
 
-  // const response = fetch(
-  //   `${process.env.GOOGLE_GEMINI_API_URL}`,
-  //   {
-  //     method: 'POST',
-  //     headers: headers,
-  //     body: JSON.stringify({
-  //       contents: content,
-  //     }),
-  //   })
-  //   .then((res)=>{
-  //     if(!res.ok){
-  //       throw new Error('Failed to fetch colors');
-  //     }
-  //     return res.json();
-  //   })
-  //   .then((data)=>{
-  //     console.log(data.candidates[0].content.parts[0].text)
-  //     const listColor = data.candidates[0].content.parts[0].text
+      const data = await response.json();
 
-  //     figma.ui.postMessage({ type: MESSAGE.PATTERN, listColor });
-  //   }).finally(()=>{
-  //     figma.ui.postMessage({ type: MESSAGE.LOADING, loading: false});
-  //   })
+      colors = data.colors;
+      loading = 'fasle';
+      figma.ui.postMessage({ type: MESSAGE.PATTERN,loading, colors }); 
+    }
+    catch(err){
+      throw new Error('Error: ');
+    }
+    finally{
+      loading = 'fasle';
+      figma.ui.postMessage({type: MESSAGE.LOADING, loading, colors});
+    }
   
 }

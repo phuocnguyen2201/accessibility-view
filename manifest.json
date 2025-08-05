@@ -17,8 +17,9 @@
   },
   "networkAccess": {
     "allowedDomains": [
-      "http://colormind.io/",
+      "https://figma-proxy-rho.vercel.app",
       "https://generativelanguage.googleapis.com"
+
     ]
   }
 }

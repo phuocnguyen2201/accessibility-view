@@ -8,7 +8,7 @@
       <button id="back">Back</button>
 
 
-      <div id="color-contrast-tool">
+      <div id="color">
         <div id="contrastResult" style="margin-top: 1em;">      
             <div id="color"></div>
         </div>
@@ -19,35 +19,73 @@
 </html>
 
 <script type="module">
+  let resultDiv = document.getElementById('color');
+    resultDiv.innerHTML= `<div class="dot-spinner">
+      <div class="dot-spinner__dot"></div>
+      <div class="dot-spinner__dot"></div>
+      <div class="dot-spinner__dot"></div>
+      <div class="dot-spinner__dot"></div>
+      <div class="dot-spinner__dot"></div>
+      <div class="dot-spinner__dot"></div>
+      <div class="dot-spinner__dot"></div>
+      <div class="dot-spinner__dot"></div>
+  </div>`;
+  //fetchTheColors();
+  resultDiv.innerHTML = parseColorArray("```\n[\"#A8D5BA\", \"#F4B393\", \"#D6D2C4\", \"#3F72AF\"]\n```\n");
+
+
+
  document.getElementById('back').onclick = () => {
     parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*')
   }
   document.getElementById('generate').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'GENERATE' } }, '*')
+    fetchTheColors();
   }
-  window.onmessage = (event) => {
-    const msg = event.data.pluginMessage;
-    if (!msg || msg.type !== 'PATTERN' || msg.type !== 'LOADING') return;
-    const {loading} = msg;
 
-    if(loading === 'true'){
-      const resultDiv = document.getElementById('color');
-      resultDiv.innerHTML= `<div class="dot-spinner">
-        <div class="dot-spinner__dot"></div>
-        <div class="dot-spinner__dot"></div>
-        <div class="dot-spinner__dot"></div>
-        <div class="dot-spinner__dot"></div>
-        <div class="dot-spinner__dot"></div>
-        <div class="dot-spinner__dot"></div>
-        <div class="dot-spinner__dot"></div>
-        <div class="dot-spinner__dot"></div>
-    </div>`;
+  function hasAtLeastFourHexColors(input) {
+    const hexColorRegex = /#([A-Fa-f0-9]{6})/g;
+    const matches = input.match(hexColorRegex);
+    return matches && matches.length >= 4;
+  }
+
+  function fetchTheColors(){
+    try{
+      const response = fetch(
+        `https://figma-proxy-rho.vercel.app/api/proxy`,
+        {
+          method: 'GET',
+          headers: { "Content-Type": "application/json" },
+        })
+        .then((res) => {return res.json()})
+        .then((data) => {
+          let colorDiv = document.getElementById('color');
+          const colors = data.colors;
+
+          colorDiv.innerHTML = hasAtLeastFourHexColors(colors)? parseColorArray(colors): 'Something wrong, try again in few seconds'
+
+        });
+    }catch(e){
+      console.log("Error")
+    }finally{
+      resultDiv.innerHTML = 'Generate';
     }
-    else{
-      const resultDiv = document.getElementById('color');
-      resultDiv.innerHTML= `${listColor}`;
+  }
+
+  function parseColorArray(input) {
+    try {
+      input = "```\n[\"#A8D5BA\", \"#F4B393\", \"#D6D2C4\", \"#3F72AF\"]\n```\n";
+      const hexRegex = /#([A-Fa-f0-9]{6})/g;
+      const matches = input.match(hexRegex);
+      let display_data = ``;
+      matches.forEach((item)=>{
+        display_data += `<div id='display-area-${item} style={ background-color: ${item}; width: 100%; height: 10px; margin-bottom: 2rem}'></div>`;
+      });
+      console.log(display_data)
+      return display_data;
+    } catch (err) {
+      console.error("Failed to parse input:", err.message);
+      return [];
     }
-   
-  };
+  }
 </script>
 

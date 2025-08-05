@@ -74,6 +74,7 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
 
   if(msg.type === MESSAGE.GENERATE){
     debugger;
+    
     fetchColormindPalette();
     return;
   }
