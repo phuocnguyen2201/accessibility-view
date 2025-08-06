@@ -85,7 +85,6 @@
       width: 2em;
       height: 2em;
       padding: 0;
-      margin-left: 0.5em;
       vertical-align: middle;
       transition: background 0.2s, border 0.2s;
     }
@@ -174,8 +173,13 @@ margin: 0 auto;
 }
 
 .contrast-color-code {
-margin-top: 0.9em;
+margin-top: 1.2em;
 font-family: monospace;
+width: 60px;
+color: white;
+background-color: var(--figma-color-bg);
+border: 1px;
+align-items: center;
 }
 
 .contrast-ratio {

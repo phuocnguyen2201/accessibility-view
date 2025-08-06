@@ -37,7 +37,7 @@
         
         <div style="text-align:center; width:100%">
           <input class="color-picker" type="color" id="frameColorPicker" name="colorPicker" value="${frameColor}">
-          <div class="contrast-color-code" id="frameColorCode">${frameColor.toUpperCase()}</div>
+          <input class="contrast-color-code" id="frameColorCode" value=${frameColor.toUpperCase()} readonly>
         </div>
          <div style="text-align:center; width:100%">
           
@@ -51,7 +51,7 @@
         </div>
         <div style="text-align:center; width:100%">
           <input class="color-picker" type="color" id="textColorPicker" name="colorPicker" value="${textColor}">
-          <div class="contrast-color-code" id="textColorCode">${textColor.toUpperCase()}</div>
+          <input class="contrast-color-code" id="textColorCode" value=${textColor.toUpperCase()} readonly>
         </div>
       </div>
       <div class="contrast-ratio">Contrast Ratio: <b>${contrast.toFixed(2)}:1</b></div>
@@ -116,7 +116,7 @@
         const textColorCode = document.getElementById('textColorCode');
         const frameColorCode = document.getElementById('frameColorCode');
 
-        if(frameColorInput && textColorInput){
+        if (frameColorInput && textColorInput){
           frameColorInput.value = textValue;
           textColorInput.value = frameValue;
 
