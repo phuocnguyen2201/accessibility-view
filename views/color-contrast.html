@@ -6,7 +6,6 @@
   <body id='dark'>
     <div class="container">
       <button id="back">Back</button>
-
       <div id="color-contrast-tool">
         <div id="contrastResult" style="margin-top: 1em;">      
 
@@ -41,7 +40,14 @@
           <div class="contrast-color-code" id="frameColorCode">${frameColor.toUpperCase()}</div>
         </div>
          <div style="text-align:center; width:100%">
-          <button id="reverse-text-frame">Reverse</button>
+          
+          <button id="swap-text-frame">
+            <svg id="mySvg" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M8 7L3 12L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
         </div>
         <div style="text-align:center; width:100%">
           <input class="color-picker" type="color" id="textColorPicker" name="colorPicker" value="${textColor}">
@@ -83,6 +89,8 @@
     // Attach event listeners after rendering
     const frameColorInput = document.getElementById('frameColorPicker');
     const textColorInput = document.getElementById('textColorPicker');
+    const btnSwap = document.getElementById('swap-text-frame');
+
     if (frameColorInput) {
       document.getElementById('frameColorCode').innerHTML = frameColorInput.value;
       frameColorInput.onchange = (e) => {
@@ -94,6 +102,35 @@
       textColorInput.onchange = (e) => {
         parent.postMessage({ pluginMessage: { type: 'CHANGE-COLOR', colorType: 'text', value: e.target.value, frameColor: frameColorInput.value } }, '*');
       };
+    }
+    if (btnSwap) {
+      btnSwap.onclick = () =>{
+        const textValue = textColorInput.value;
+        const frameValue = frameColorInput.value;
+
+        const sampleArea = document.getElementById('sample-area');
+
+        const sampleLargeText = document.getElementById('sample-large-text');
+        const sampleSmallText = document.getElementById('sample-small-text');
+
+        const textColorCode = document.getElementById('textColorCode');
+        const frameColorCode = document.getElementById('frameColorCode');
+
+        if(frameColorInput && textColorInput){
+          frameColorInput.value = textValue;
+          textColorInput.value = frameValue;
+
+          sampleArea.style.backgroundColor = textValue;
+
+          sampleLargeText.style.color = frameValue;
+          sampleSmallText.style.color = frameValue;
+
+          textColorCode.innerHTML = frameValue.toUpperCase();
+          frameColorCode.innerHTML = textValue.toUpperCase();
+
+          parent.postMessage({ pluginMessage: {type: 'SWAP', frameColor: frameColorInput.value , textColor: textColorInput.value } }, '*');
+        }
+      }
     }
   };
 

@@ -38,6 +38,7 @@
     GENERATE: 'GENERATE',
     URL: 'URL',
     NOTIFY: 'NOTIFY',
+    SWAP: 'SWAP',
     
     COLOR_BLINDNESS: {
       KEY:{ 

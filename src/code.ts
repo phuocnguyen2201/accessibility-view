@@ -98,11 +98,14 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
     return;
   }
 
-  if(msg.type === MESSAGE.NOTIFY){
-    const message = msg.hexCode;
+  if([MESSAGE.NOTIFY, MESSAGE.SWAP].includes(msg.type)){
     const selection = figma.currentPage.selection;
     applyNewColorsToTheFrame(selection[0], msg.frameColor, msg.textColor);
     return;
+  }
+
+  if (msg.type === MESSAGE.SWAP){
+    const selection = figma.currentPage.selection;
   }
   // Make sure to close the plugin when you're done. Otherwise the plugin will
   // keep running, which shows the cancel button at the bottom of the screen.
