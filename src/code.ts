@@ -14,7 +14,7 @@ figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.M
 // posted message.
 import { NOTIFY_MESSAGES, MESSAGE, COLOR_URL } from '../constants/constants';
 import {clearAllVisionSimulationFrames, simulateVision} from '../features/vision-simulation';
-import { checkContrast, checkContrastWithOnChangeColors, hexToRgb } from '../features/color-contrast';
+import { checkContrast, checkContrastWithOnChangeColors, applyNewColorsToTheFrame } from '../features/color-contrast';
 import { fetchColormindPalette} from '../features/color-pattern';
 import "./style.css";
 
@@ -87,32 +87,21 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
   }
 
   if(msg.type === MESSAGE.CHANGE_COLOR){
-
+    debugger;
     const frameColor = msg.colorType === 'frame'? msg.frameColor = msg.value: msg.frameColor;
     const textColor = msg.colorType === 'text'? msg.textColor = msg.value: msg.textColor;
+    const selection = figma.currentPage.selection;
 
     checkContrastWithOnChangeColors(frameColor, textColor);
+    
+    applyNewColorsToTheFrame(selection[0], msg.frameColor, msg.textColor);
     return;
   }
 
   if(msg.type === MESSAGE.NOTIFY){
     const message = msg.hexCode;
     const selection = figma.currentPage.selection;
-    if (selection && selection.length === 1 && selection[0].type === 'FRAME') {
-      const frame = selection[0];
-      if ('fills' in frame && Array.isArray(frame.fills) && frame.fills.length > 0 && frame.fills[0].type === 'SOLID') {
-        const colors = hexToRgb(message);
-        const newFill = {
-          type: 'SOLID' as const,
-          color: {
-            r: colors[0] / 255,
-            g: colors[1] / 255,
-            b: colors[2] / 255
-          }
-        };
-        frame.fills = [newFill];
-      }
-    }
+    applyNewColorsToTheFrame(selection[0], msg.frameColor, msg.textColor);
     return;
   }
   // Make sure to close the plugin when you're done. Otherwise the plugin will

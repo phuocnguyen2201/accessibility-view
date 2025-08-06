@@ -27,11 +27,59 @@ import { COLORS, MESSAGE } from '../constants/constants';
  }
 
 export function checkContrastWithOnChangeColors(frameColor: string, textColor: string) {
-  debugger;
   // Calculate the contrast level and wcag standard.
   let contrast = getContrastRatio(frameColor, textColor);
   let levels = getWcagLevels(contrast);
   figma.ui.postMessage({ type: MESSAGE.RES_CONTRAST, frameColor, textColor, contrast, levels });
+}
+
+export function applyNewColorsToTheFrame(selection: SceneNode,frameColor: string, textColor: string){
+  //let message = frameColor != undefined? frameColor: textColor;
+debugger;
+  if (selection && selection.type === 'FRAME') {
+    // Set frame background color as before
+    if ('fills' in selection && Array.isArray(selection.fills) && selection.fills.length > 0 && selection.fills[0].type === 'SOLID') {
+      const colors = hexToRgb(frameColor);
+      const newFill = {
+        type: 'SOLID' as const,
+        color: {
+          r: colors[0] / 255,
+          g: colors[1] / 255,
+          b: colors[2] / 255
+        }
+      };
+      selection.fills = [newFill];
+    }
+    // Set text color for all TEXT children
+    if ('children' in selection) {
+      for (const child of selection.children) {
+        if (child.type === 'TEXT') {
+          const colors = hexToRgb(textColor);
+          const newFill = {
+            type: 'SOLID' as const,
+            color: {
+              r: colors[0] / 255,
+              g: colors[1] / 255,
+              b: colors[2] / 255
+            }
+          };
+          child.fills = [newFill];
+        }
+      }
+    }
+  }
+  else if (selection && selection.type === 'TEXT'){
+    const colors = hexToRgb(textColor);
+    const newFill = {
+      type: 'SOLID' as const,
+      color: {
+        r: colors[0] / 255,
+        g: colors[1] / 255,
+        b: colors[2] / 255
+      }
+    };
+    selection.fills = [newFill];
+  }
 }
 
 function rgbToHex(r: number, g: number, b: number): string {
@@ -53,7 +101,7 @@ function rgbToHex(r: number, g: number, b: number): string {
     return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
   }
 
-  export function hexToRgb(hex: string) {
+  function hexToRgb(hex: string) {
     hex = hex.replace('#', '');
     if (hex.length === 3) {
       hex = hex.split('').map((x) => x + x).join('');
