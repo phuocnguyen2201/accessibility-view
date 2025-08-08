@@ -71,7 +71,8 @@
     WINDOW:{
       MAIN : 'Accessibility View',
       COLOR_CONTRAST: 'Check Color Contrast',
-      VISION_SIMULATION: 'Vision Simulation'
+      VISION_SIMULATION: 'Vision Simulation',
+      AI_COLOR_PATTERN: 'AI Random Color Generator'
     }
 
   }

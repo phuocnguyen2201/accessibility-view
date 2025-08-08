@@ -69,7 +69,7 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
 
   //Open the ai gen color pattern.
   if(msg.type === MESSAGE.VIEW.AI_PATTERN){
-    figma.showUI(__uiFiles__.color_pattern, { width : 400, height: 700, title: MESSAGE.WINDOW.MAIN });
+    figma.showUI(__uiFiles__.color_pattern, { width : 400, height: 700, title: MESSAGE.WINDOW.AI_COLOR_PATTERN });
     
     figma.ui.postMessage({ type: MESSAGE.URL, url}); 
     return;
