@@ -101,8 +101,8 @@
   function buttonOnClick(id){
     const button = document.getElementById(id);
     if(button !== null && button !== undefined){
-      const hexCode = button.title;
-      parent.postMessage({ pluginMessage: { type: 'NOTIFY', hexCode } }, '*')
+      const frameColor = button.title;
+      parent.postMessage({ pluginMessage: { type: 'NOTIFY', frameColor } }, '*')
     }
   }
 

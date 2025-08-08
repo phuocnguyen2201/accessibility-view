@@ -53,7 +53,7 @@ debugger;
     // Set text color for all TEXT children
     if ('children' in selection) {
       for (const child of selection.children) {
-        if (child.type === 'TEXT') {
+        if (child.type === 'TEXT' && textColor !==undefined) {
           const colors = hexToRgb(textColor);
           const newFill = {
             type: 'SOLID' as const,
