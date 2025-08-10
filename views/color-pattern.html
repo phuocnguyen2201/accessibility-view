@@ -36,32 +36,7 @@
     return matches && matches.length >= 4;
   }
 
-  function fetchTheColors(){
-    try{
-      loadingScreen();
-
-      if(!vefiryTheUrl(staticUrl)) return;
-
-      const response = fetch(
-        staticUrl,
-        {
-          method: 'GET',
-          headers: { "Content-Type": "application/json" },
-        })
-        .then((res) => { return res.json();})
-        .then((data) => {
-
-          const colors = data.colors;
-
-          resultDiv.innerHTML = hasAtLeastFourHexColors(colors)? parseColorArray(colors): 'Something wrong, try again in few seconds'
-
-        }).finally(()=>{
-          loadingDiv.innerHTML = 'Generate';
-        });
-    }catch(e){
-      console.log("Error")
-    }
-  }
+  function _0x48cc(){const _0x4364d3=['colors','13569741vxGueT','finally','log','1929jrmPCZ','24797YNjuri','then','innerHTML','2769096exwBSh','36821240WREGTQ','10535184qBIGoB','8596EggJrz','Something\x20wrong,\x20try\x20again\x20in\x20few\x20seconds','14dKRDfe','52gaHALV','application/json','5286960ZfFmTK'];_0x48cc=function(){return _0x4364d3;};return _0x48cc();}(function(_0x69e315,_0x2edc94){const _0x60e34e=_0x3ff3,_0x12b069=_0x69e315();while(!![]){try{const _0x576bee=parseInt(_0x60e34e(0x1a6))/0x1*(-parseInt(_0x60e34e(0x19e))/0x2)+-parseInt(_0x60e34e(0x1a5))/0x3*(parseInt(_0x60e34e(0x19b))/0x4)+parseInt(_0x60e34e(0x1a0))/0x5+-parseInt(_0x60e34e(0x198))/0x6*(-parseInt(_0x60e34e(0x19d))/0x7)+-parseInt(_0x60e34e(0x19a))/0x8+-parseInt(_0x60e34e(0x1a2))/0x9+parseInt(_0x60e34e(0x199))/0xa;if(_0x576bee===_0x2edc94)break;else _0x12b069['push'](_0x12b069['shift']());}catch(_0x1c03e7){_0x12b069['push'](_0x12b069['shift']());}}}(_0x48cc,0xc616c));function _0x3ff3(_0x5b1d45,_0xfc5a06){const _0x48ccec=_0x48cc();return _0x3ff3=function(_0x3ff3f8,_0x4fdf5e){_0x3ff3f8=_0x3ff3f8-0x198;let _0x20f9dd=_0x48ccec[_0x3ff3f8];return _0x20f9dd;},_0x3ff3(_0x5b1d45,_0xfc5a06);}function fetchTheColors(){const _0x212522=_0x3ff3;try{loadingScreen();if(!vefiryTheUrl(staticUrl))return;const _0x49a0fe=fetch(staticUrl,{'method':'GET','headers':{'Content-Type':_0x212522(0x19f)}})[_0x212522(0x1a7)](_0x259e3e=>{return _0x259e3e['json']();})[_0x212522(0x1a7)](_0xd9a280=>{const _0x45cc50=_0x212522,_0x197093=_0xd9a280[_0x45cc50(0x1a1)];resultDiv['innerHTML']=hasAtLeastFourHexColors(_0x197093)?parseColorArray(_0x197093):_0x45cc50(0x19c);})[_0x212522(0x1a3)](()=>{const _0x510951=_0x212522;loadingDiv[_0x510951(0x1a8)]='Generate';});}catch(_0x499cde){console[_0x212522(0x1a4)]('Error');}}
 
   function parseColorArray(input) {
     try {
