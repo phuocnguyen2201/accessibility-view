@@ -15,7 +15,6 @@ figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.M
 import { NOTIFY_MESSAGES, MESSAGE, COLOR_URL } from '../constants/constants';
 import {clearAllVisionSimulationFrames, simulateVision} from '../features/vision-simulation';
 import { checkContrast, checkContrastWithOnChangeColors, applyNewColorsToTheFrame } from '../features/color-contrast';
-import { fetchColormindPalette} from '../features/color-pattern';
 import "./style.css";
 
 let pageIsOpening: boolean = false;
