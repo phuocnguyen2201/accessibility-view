@@ -17,8 +17,7 @@
   },
   "networkAccess": {
     "allowedDomains": [
-      "https://figma-proxy-rho.vercel.app",
-      "https://generativelanguage.googleapis.com"
+      "https://figma-proxy-rho.vercel.app"
 
     ]
   }
