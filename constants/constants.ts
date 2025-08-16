@@ -77,5 +77,6 @@
 
   }
   export const COLOR_URL = {
-    PROXY:"https://figma-proxy-rho.vercel.app/api/proxy"
+    PROXY:"https://figma-proxy-rho.vercel.app/api/proxy",
+    PROXY2:"https://foo6smk05k.execute-api.us-east-1.amazonaws.com/default/figma-proxy"
   }
