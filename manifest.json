@@ -17,7 +17,8 @@
   },
   "networkAccess": {
     "allowedDomains": [
-      "https://figma-proxy-rho.vercel.app"
+      "https://figma-proxy-rho.vercel.app",
+      "https://foo6smk05k.execute-api.us-east-1.amazonaws.com/"
 
     ]
   }

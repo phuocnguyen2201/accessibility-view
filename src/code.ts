@@ -18,7 +18,7 @@ import { checkContrast, checkContrastWithOnChangeColors, applyNewColorsToTheFram
 import "./style.css";
 
 let pageIsOpening: boolean = false;
-const url = COLOR_URL.PROXY2;
+const url = COLOR_URL.PROXY;
 figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string, frameColor: string, value: string, count?: number, hexCode: string}) => {
 
   //Open vision simulation view.
