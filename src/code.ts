@@ -16,7 +16,6 @@ import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
 import { clearAllVisionSimulationFrames, simulateVision } from '../features/vision-simulation';
 import { checkContrast, checkContrastWithOnChangeColors, applyNewColorsToTheFrame } from '../features/color-contrast';
 import { getAccessibleColorPatternHexes } from '../features/color-pattern';
-
 import "./style.css";
 
 let pageIsOpening: boolean = false;

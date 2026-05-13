@@ -34,7 +34,7 @@ Simulate how designs appear to users with different types of color blindness:
 ### For Development
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/phuocnguyen2201/accessibility-view.git
    cd accessibility-view
    ```
 
@@ -120,18 +120,6 @@ accessibility-view/
 3. Click on any color to apply it to your selected frame
 4. Generate new patterns as needed for inspiration
 
-## 🔧 Configuration
-
-### Network Access
-The plugin requires network access to:
-- `https://figma-proxy-rho.vercel.app` - For AI color generation
-- `https://generativelanguage.googleapis.com` - For AI services
-
-### Plugin Capabilities
-- **Document Access**: Dynamic page access for real-time updates
-- **Editor Type**: Figma only
-- **API Version**: 1.0.0
-
 ## 🎨 Features in Detail
 
 ### Color Contrast Analysis
@@ -187,13 +175,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [ ] Batch processing for multiple frames
 - [ ] Integration with design systems
 - [ ] Advanced contrast optimization suggestions
-
-## 📞 Support
-
-For issues, questions, or feature requests:
-1. Check existing issues in the repository
-2. Create a new issue with detailed information
-3. Include steps to reproduce and expected behavior
 
 ---
 

@@ -76,4 +76,4 @@
       AI_COLOR_PATTERN: 'AI Random Color Generator'
     }
 
-  }
+  };
