@@ -37,6 +37,7 @@
     LOADING: 'LOADING',
     GENERATE: 'GENERATE',
     URL: 'URL',
+    COLOR_PATTERN_PALETTE: 'COLOR_PATTERN_PALETTE',
     NOTIFY: 'NOTIFY',
     SWAP: 'SWAP',
     
@@ -75,7 +76,4 @@
       AI_COLOR_PATTERN: 'AI Random Color Generator'
     }
 
-  }
-  export const COLOR_URL = {
-    PROXY:"https://figma-proxy-rho.vercel.app/api/proxy"
   }

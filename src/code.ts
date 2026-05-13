@@ -12,14 +12,19 @@ figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.M
 // Calls to "parent.postMessage" from within the HTML page will trigger this
 // callback. The callback will be passed the "pluginMessage" property of the
 // posted message.
-import { NOTIFY_MESSAGES, MESSAGE, COLOR_URL } from '../constants/constants';
-import {clearAllVisionSimulationFrames, simulateVision} from '../features/vision-simulation';
+import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
+import { clearAllVisionSimulationFrames, simulateVision } from '../features/vision-simulation';
 import { checkContrast, checkContrastWithOnChangeColors, applyNewColorsToTheFrame } from '../features/color-contrast';
-import { fetchColormindPalette} from '../features/color-pattern';
+import { getAccessibleColorPatternHexes } from '../features/color-pattern';
+
 import "./style.css";
 
 let pageIsOpening: boolean = false;
-const url = COLOR_URL.PROXY;
+
+function postColorPatternPalette(hueOffsetDegrees = 0) {
+  const colors = getAccessibleColorPatternHexes(undefined, hueOffsetDegrees);
+  figma.ui.postMessage({ type: MESSAGE.COLOR_PATTERN_PALETTE, colors });
+}
 figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string, frameColor: string, value: string, count?: number, hexCode: string}) => {
 
   //Open vision simulation view.
@@ -68,15 +73,14 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
   }
 
   //Open the ai gen color pattern.
-  if(msg.type === MESSAGE.VIEW.AI_PATTERN){
-    figma.showUI(__uiFiles__.color_pattern, { width : 400, height: 700, title: MESSAGE.WINDOW.AI_COLOR_PATTERN });
-    
-    figma.ui.postMessage({ type: MESSAGE.URL, url}); 
+  if (msg.type === MESSAGE.VIEW.AI_PATTERN) {
+    figma.showUI(__uiFiles__.color_pattern, { width: 400, height: 700, title: MESSAGE.WINDOW.AI_COLOR_PATTERN });
+    postColorPatternPalette(0);
     return;
   }
 
-  if(msg.type === MESSAGE.GENERATE){
-    figma.ui.postMessage({ type: MESSAGE.URL, url});
+  if (msg.type === MESSAGE.GENERATE) {
+    postColorPatternPalette(Math.floor(Math.random() * 360));
     return;
   }
 

@@ -3,90 +3,75 @@
   <head>
     <meta charset="UTF-8" />
   </head>
-  <body id='dark'>
+  <body id="dark">
     <div class="container">
       <button id="back">Back</button>
 
       <div id="color-contrast-tool">
         <div id="color-display"></div>
-        <div id="contrastResult" style="margin-top: 1em;">      
-            
-        </div>
-        <button id="generate"> Generate</button>
+        <div id="contrastResult" style="margin-top: 1em"></div>
+        <button id="generate">Generate</button>
       </div>
     </div>
   </body>
 </html>
 
 <script type="module">
-  let resultDiv = document.getElementById('color-display');
-  let loadingDiv = document.getElementById('generate');
-  let staticUrl = '';
-  
+  const resultDiv = document.getElementById('color-display');
+  const generateBtn = document.getElementById('generate');
+
   document.getElementById('back').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*')
-  }
+    parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*');
+  };
+
   document.getElementById('generate').onclick = () => {
-    fetchTheColors();
+    requestGenerate();
+  };
+
+  function requestGenerate() {
+    loadingScreen();
+    parent.postMessage({ pluginMessage: { type: 'GENERATE' } }, '*');
   }
 
-  function hasAtLeastFourHexColors(input) {
-    const hexColorRegex = /#([A-Fa-f0-9]{6})/g;
-    const matches = input.match(hexColorRegex);
-    return matches && matches.length >= 4;
-  }
-
-  function _0x48cc(){const _0x4364d3=['colors','13569741vxGueT','finally','log','1929jrmPCZ','24797YNjuri','then','innerHTML','2769096exwBSh','36821240WREGTQ','10535184qBIGoB','8596EggJrz','Something\x20wrong,\x20try\x20again\x20in\x20few\x20seconds','14dKRDfe','52gaHALV','application/json','5286960ZfFmTK'];_0x48cc=function(){return _0x4364d3;};return _0x48cc();}(function(_0x69e315,_0x2edc94){const _0x60e34e=_0x3ff3,_0x12b069=_0x69e315();while(!![]){try{const _0x576bee=parseInt(_0x60e34e(0x1a6))/0x1*(-parseInt(_0x60e34e(0x19e))/0x2)+-parseInt(_0x60e34e(0x1a5))/0x3*(parseInt(_0x60e34e(0x19b))/0x4)+parseInt(_0x60e34e(0x1a0))/0x5+-parseInt(_0x60e34e(0x198))/0x6*(-parseInt(_0x60e34e(0x19d))/0x7)+-parseInt(_0x60e34e(0x19a))/0x8+-parseInt(_0x60e34e(0x1a2))/0x9+parseInt(_0x60e34e(0x199))/0xa;if(_0x576bee===_0x2edc94)break;else _0x12b069['push'](_0x12b069['shift']());}catch(_0x1c03e7){_0x12b069['push'](_0x12b069['shift']());}}}(_0x48cc,0xc616c));function _0x3ff3(_0x5b1d45,_0xfc5a06){const _0x48ccec=_0x48cc();return _0x3ff3=function(_0x3ff3f8,_0x4fdf5e){_0x3ff3f8=_0x3ff3f8-0x198;let _0x20f9dd=_0x48ccec[_0x3ff3f8];return _0x20f9dd;},_0x3ff3(_0x5b1d45,_0xfc5a06);}function fetchTheColors(){const _0x212522=_0x3ff3;try{loadingScreen();if(!vefiryTheUrl(staticUrl))return;const _0x49a0fe=fetch(staticUrl,{'method':'GET','headers':{'Content-Type':_0x212522(0x19f)}})[_0x212522(0x1a7)](_0x259e3e=>{return _0x259e3e['json']();})[_0x212522(0x1a7)](_0xd9a280=>{const _0x45cc50=_0x212522,_0x197093=_0xd9a280[_0x45cc50(0x1a1)];resultDiv['innerHTML']=hasAtLeastFourHexColors(_0x197093)?parseColorArray(_0x197093):_0x45cc50(0x19c);})[_0x212522(0x1a3)](()=>{const _0x510951=_0x212522;loadingDiv[_0x510951(0x1a8)]='Generate';});}catch(_0x499cde){console[_0x212522(0x1a4)]('Error');}}
-
-  function parseColorArray(input) {
-    try {
-      const hexRegex = /#([A-Fa-f0-9]{6})/g;
-      const matches = input.match(hexRegex);
-      let display_data = ``;
-      matches.forEach((item, index)=>{
-        display_data += `<button id='display-area-${index}' title='${item}' style=" background-color: ${item}; width: 100%; height: 4rem; margin-bottom: 1rem"></button>`;
-      });
-      
-        // Add event listeners after the HTML is inserted
-      setTimeout(() => {
-        matches.forEach((item, index) => {
-          const button = document.getElementById(`display-area-${index}`);
-          if (button) {
-            button.addEventListener('click', () => buttonOnClick(`display-area-${index}`));
-          }
-        });
-      }, 0);
-
-      return display_data;
-    } catch (err) {
-      console.error("Failed to parse input:", err.message);
-      return [];
+  function renderHexColors(hexes) {
+    if (!hexes || hexes.length < 5) {
+      resultDiv.innerHTML = '<p>Could not load colors.</p>';
+      return;
     }
-  }
-  function loadingScreen(){
-   
-    loadingDiv.innerHTML= `<span class="loader"></span> Generate`;
+    let html = '';
+    hexes.forEach((hex, index) => {
+      html += `<button type="button" id="display-area-${index}" title="${hex}" style="background-color: ${hex}; width: 100%; height: 4rem; margin-bottom: 1rem; border: none; cursor: pointer;"></button>`;
+    });
+    resultDiv.innerHTML = html;
+    hexes.forEach((_hex, index) => {
+      const button = document.getElementById(`display-area-${index}`);
+      if (button) {
+        button.addEventListener('click', () => buttonOnClick(`display-area-${index}`));
+      }
+    });
   }
 
-  function vefiryTheUrl(url){
-    const regex = /^https:\/\/.*api\/proxy/;
-    return regex.test(url);
+  function loadingScreen() {
+    generateBtn.innerHTML = '<span class="loader"></span> Generate';
   }
 
-  function buttonOnClick(id){
+  function resetGenerateButton() {
+    generateBtn.textContent = 'Generate';
+  }
+
+  function buttonOnClick(id) {
     const button = document.getElementById(id);
-    if(button !== null && button !== undefined){
+    if (button) {
       const frameColor = button.title;
-      parent.postMessage({ pluginMessage: { type: 'NOTIFY', frameColor } }, '*')
+      parent.postMessage({ pluginMessage: { type: 'NOTIFY', frameColor } }, '*');
     }
   }
 
   window.onmessage = (event) => {
     const msg = event.data.pluginMessage;
-    if (!msg || msg.type !== 'URL') return;
-    const { url} = msg;
-    staticUrl = vefiryTheUrl(url)? url: '';
-    fetchTheColors();
-  }
+    if (!msg || msg.type !== 'COLOR_PATTERN_PALETTE') return;
+    const { colors } = msg;
+    renderHexColors(colors);
+    resetGenerateButton();
+  };
 </script>
-
