@@ -1,10 +1,10 @@
-    /* Dark mode stylesheet for Figma plugin */
+    /* Default light (white) mode; dark via prefers-color-scheme or .dark */
     body {
       margin: 0;
       font-family: Inter, sans-serif;
       font-size: 14px;
-      background-color: var(--figma-color-bg);
-      color: var(--figma-color-text);
+      background-color: #ffffff;
+      color: #1e1e1e;
       transition: background 0.2s, color 0.2s;
     }
     
@@ -18,33 +18,31 @@
     h1 {
       font-size: 16px;
       margin-bottom: 12px;
-      color: #ffffff;
+      color: #1e1e1e;
     }
     
     button {
       font-family: inherit;
       font-weight: 700;
       font-size: 18px;
-      color: var(--figma-color-text-secondary);
+      color: #1e1e1e;
       border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.2s ease;
-      background: var(--figma-color-bg);
-      border: 1px solid #bbb;
+      background: #f5f5f5;
+      border: 1px solid #d0d0d0;
       padding: 0.5em 1em;
-      cursor: pointer;
       transition: background 0.2s, color 0.2s, border 0.2s;
       width: 100%;
       min-height: 3rem;
-      font-size: 18px;
+      margin-bottom: 1rem;
     }
     
     button:hover {
-      background-color: var(--figma-color-bg-brand-hover);
+      background-color: #ebebeb;
     }
     
     button:active {
-      background-color: var(--figma-color-bg-brand-pressed);
+      background-color: #e0e0e0;
     }
     
     input[type="text"],
@@ -54,28 +52,28 @@
       width: 100%;
       padding: 8px;
       margin-bottom: 12px;
-      background-color: #3c3c3c;
-      color: #ffffff;
-      border: 1px solid #555;
+      background-color: #ffffff;
+      color: #1e1e1e;
+      border: 1px solid #cccccc;
       border-radius: 4px;
       box-sizing: border-box;
     }
     
     input::placeholder,
     textarea::placeholder {
-      color: #bbbbbb;
+      color: #757575;
     }
     
     label {
       display: block;
       margin-bottom: 4px;
       font-weight: 500;
-      color: #dddddd;
+      color: #424242;
     }
     
     hr {
       border: none;
-      border-top: 1px solid #444;
+      border-top: 1px solid #e0e0e0;
       margin: 16px 0;
     }
   
@@ -115,15 +113,41 @@
         background: #181a1b;
         color: #f3f3f3;
       }
+      h1 {
+        color: #f3f3f3;
+      }
       button {
         background: #23272b;
         color: #f3f3f3;
         border: 1px solid #444;
-        margin-bottom: 1rem;
+      }
+      button:hover {
+        background-color: #2d3339;
+      }
+      button:active {
+        background-color: #1a1d20;
       }
       #color-contrast-tool {
         background: #23272b;
         box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      }
+      input[type="text"],
+      input[type="number"],
+      select,
+      textarea {
+        background-color: #3c3c3c;
+        color: #ffffff;
+        border: 1px solid #555;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        color: #bbbbbb;
+      }
+      label {
+        color: #dddddd;
+      }
+      hr {
+        border-top-color: #444;
       }
       input[type="color"] {
         background: #23272b;
@@ -131,6 +155,18 @@
       }
       table, th, td {
         border-color: #444;
+      }
+      .contrast-color-code {
+        color: #f3f3f3;
+        background-color: #23272b;
+        border: 1px solid #444;
+      }
+      .contrast-table-note {
+        color: #a0a0a0;
+      }
+      .loader {
+        border-color: #ffffff;
+        border-bottom-color: transparent;
       }
     }
   
@@ -140,14 +176,41 @@
       color: #f3f3f3 !important;
   
     }
+    body.dark h1 {
+      color: #f3f3f3 !important;
+    }
     body.dark button {
       background: #23272b !important;
       color: #f3f3f3 !important;
       border: 1px solid #444 !important;
     }
+    body.dark button:hover {
+      background-color: #2d3339 !important;
+    }
+    body.dark button:active {
+      background-color: #1a1d20 !important;
+    }
     body.dark #color-contrast-tool {
       background: #23272b !important;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+    }
+    body.dark input[type="text"],
+    body.dark input[type="number"],
+    body.dark select,
+    body.dark textarea {
+      background-color: #3c3c3c !important;
+      color: #ffffff !important;
+      border: 1px solid #555 !important;
+    }
+    body.dark input::placeholder,
+    body.dark textarea::placeholder {
+      color: #bbbbbb !important;
+    }
+    body.dark label {
+      color: #dddddd !important;
+    }
+    body.dark hr {
+      border-top-color: #444 !important;
     }
     body.dark input[type="color"] {
       background: #23272b !important;
@@ -155,6 +218,18 @@
     }
     body.dark table, body.dark th, body.dark td {
       border-color: #444 !important;
+    }
+    body.dark .contrast-color-code {
+      color: #f3f3f3 !important;
+      background-color: #23272b !important;
+      border: 1px solid #444 !important;
+    }
+    body.dark .contrast-table-note {
+      color: #a0a0a0 !important;
+    }
+    body.dark .loader {
+      border-color: #ffffff !important;
+      border-bottom-color: transparent !important;
     }
 
 .contrast-flex-row {
@@ -176,9 +251,9 @@ margin: 0 auto;
 margin-top: 1.2em;
 font-family: monospace;
 width: 60px;
-color: white;
-background-color: var(--figma-color-bg);
-border: 1px;
+color: #1e1e1e;
+background-color: #f0f0f0;
+border: 1px solid #d0d0d0;
 align-items: center;
 }
 
@@ -251,7 +326,7 @@ font-weight: 500;
 .loader {
   width: 18px;
   height: 18px;
-  border: 5px solid #FFF;
+  border: 5px solid #333333;
   border-bottom-color: transparent;
   border-radius: 50%;
   display: inline-block;

@@ -15,16 +15,47 @@ figma.showUI(__uiFiles__.main,{width : 400, height: 700, title: MESSAGE.WINDOW.M
 import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
 import { clearAllVisionSimulationFrames, simulateVision } from '../features/vision-simulation';
 import { checkContrast, checkContrastWithOnChangeColors, applyNewColorsToTheFrame } from '../features/color-contrast';
-import { getAccessibleColorPatternHexes } from '../features/color-pattern';
+import {
+  getAccessibleColorPatternDualHexes,
+  wcagContrastTargetFromPluginFields,
+  type WcagContrastTarget,
+} from '../features/color-pattern';
 import "./style.css";
 
 let pageIsOpening: boolean = false;
 
-function postColorPatternPalette(hueOffsetDegrees = 0) {
-  const colors = getAccessibleColorPatternHexes(undefined, hueOffsetDegrees);
-  figma.ui.postMessage({ type: MESSAGE.COLOR_PATTERN_PALETTE, colors });
+/** Last hue rotation used for the AI color pattern view (kept when only WCAG target changes). */
+let colorPatternHueOffset = 0;
+
+function postColorPatternPalette(
+  hueOffsetDegrees = 0,
+  target: WcagContrastTarget = { level: 'AA', textSize: 'normal' }
+) {
+  const { lightTheme, darkTheme } = getAccessibleColorPatternDualHexes(
+    hueOffsetDegrees,
+    target
+  );
+  figma.ui.postMessage({
+    type: MESSAGE.COLOR_PATTERN_PALETTE,
+    lightTheme,
+    darkTheme,
+  });
 }
-figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string, frameColor: string, value: string, count?: number, hexCode: string}) => {
+
+type PluginMessage = {
+  type: string;
+  colorType?: string;
+  textColor?: string;
+  frameColor?: string;
+  value?: string;
+  count?: number;
+  hexCode?: string;
+  wcagLevel?: string;
+  textSize?: string;
+  preset?: string;
+};
+
+figma.ui.onmessage = (msg: PluginMessage) => {
 
   //Open vision simulation view.
   if (msg.type === MESSAGE.VIEW.VISION_SIMULATION) {
@@ -74,12 +105,21 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
   //Open the ai gen color pattern.
   if (msg.type === MESSAGE.VIEW.AI_PATTERN) {
     figma.showUI(__uiFiles__.color_pattern, { width: 400, height: 700, title: MESSAGE.WINDOW.AI_COLOR_PATTERN });
+    colorPatternHueOffset = 0;
     postColorPatternPalette(0);
     return;
   }
 
+  if (msg.type === MESSAGE.WCAG_PATTERN_TARGET) {
+    const target = wcagContrastTargetFromPluginFields(msg);
+    postColorPatternPalette(colorPatternHueOffset, target);
+    return;
+  }
+
   if (msg.type === MESSAGE.GENERATE) {
-    postColorPatternPalette(Math.floor(Math.random() * 360));
+    const target = wcagContrastTargetFromPluginFields(msg);
+    colorPatternHueOffset = Math.floor(Math.random() * 360);
+    postColorPatternPalette(colorPatternHueOffset, target);
     return;
   }
 
@@ -91,19 +131,25 @@ figma.ui.onmessage =  (msg: {type: string, colorType: string, textColor: string,
 
   if(msg.type === MESSAGE.CHANGE_COLOR){
     debugger;
-    const frameColor = msg.colorType === 'frame'? msg.frameColor = msg.value: msg.frameColor;
-    const textColor = msg.colorType === 'text'? msg.textColor = msg.value: msg.textColor;
+    const frameColor =
+      msg.colorType === 'frame' ? msg.value ?? '' : msg.frameColor ?? '';
+    const textColor =
+      msg.colorType === 'text' ? msg.value ?? '' : msg.textColor ?? '';
     const selection = figma.currentPage.selection;
 
     checkContrastWithOnChangeColors(frameColor, textColor);
     
-    applyNewColorsToTheFrame(selection[0], msg.frameColor, msg.textColor);
+    applyNewColorsToTheFrame(selection[0], frameColor, textColor);
     return;
   }
 
   if([MESSAGE.NOTIFY, MESSAGE.SWAP].includes(msg.type)){
     const selection = figma.currentPage.selection;
-    applyNewColorsToTheFrame(selection[0], msg.frameColor, msg.textColor);
+    applyNewColorsToTheFrame(
+      selection[0],
+      msg.frameColor ?? '',
+      msg.textColor ?? ''
+    );
     return;
   }
 

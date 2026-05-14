@@ -36,6 +36,8 @@
     CHANGE_COLOR: 'CHANGE-COLOR',
     LOADING: 'LOADING',
     GENERATE: 'GENERATE',
+    /** Recompute color pattern palette for a new WCAG target without changing hue offset. */
+    WCAG_PATTERN_TARGET: 'WCAG_PATTERN_TARGET',
     URL: 'URL',
     COLOR_PATTERN_PALETTE: 'COLOR_PATTERN_PALETTE',
     NOTIFY: 'NOTIFY',

@@ -2,76 +2,279 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <style>
+      .pattern-wcag-options {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin: 12px 0 16px;
+      }
+      .pattern-wcag-options button {
+        width: 100%;
+        min-height: 2.5rem;
+        margin-bottom: 0;
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .pattern-wcag-options button.pattern-wcag-option--active {
+        box-shadow: inset 0 0 0 2px currentColor;
+      }
+      .pattern-wcag-hint {
+        font-size: 12px;
+        opacity: 0.85;
+        margin: 0 0 8px;
+      }
+      .pattern-color-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        align-items: start;
+      }
+      .pattern-color-column {
+        border-radius: 8px;
+        padding: 8px;
+        min-width: 0;
+      }
+      .pattern-color-column--light {
+        background: #fafafa;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+      }
+      .pattern-color-column--dark {
+        background: #181a1b;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+      }
+      .pattern-column-title {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        text-align: center;
+        margin: 0 0 8px;
+      }
+      .pattern-color-column--light .pattern-column-title {
+        color: #333;
+      }
+      .pattern-color-column--dark .pattern-column-title {
+        color: #e8e8e8;
+      }
+      .pattern-color-swatch-stack button {
+        width: 100%;
+        height: 3rem;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        box-sizing: border-box;
+      }
+      .pattern-color-column--light .pattern-color-swatch-stack button {
+        border: 1px solid rgba(0, 0, 0, 0.12);
+      }
+      .pattern-color-column--dark .pattern-color-swatch-stack button {
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+      .pattern-color-swatch-stack button:last-child {
+        margin-bottom: 0;
+      }
+    </style>
   </head>
   <body id="dark">
     <div class="container">
       <button id="back">Back</button>
 
       <div id="color-contrast-tool">
-        <div id="color-display"></div>
+        <p class="pattern-wcag-hint">
+          WCAG 2.1 text contrast target. Large text: 18pt+ regular or 14pt+ bold.
+        </p>
+        <div
+          class="pattern-wcag-options"
+          role="radiogroup"
+          aria-label="WCAG contrast target"
+        >
+          <button
+            type="button"
+            class="pattern-wcag-option pattern-wcag-option--active"
+            id="wcag-aa-normal"
+            data-preset="aa-normal"
+            data-level="AA"
+            data-size="normal"
+            aria-checked="true"
+            role="radio"
+          >
+            AA — Normal (4.5:1)
+          </button>
+          <button
+            type="button"
+            class="pattern-wcag-option"
+            id="wcag-aa-large"
+            data-preset="aa-large"
+            data-level="AA"
+            data-size="large"
+            aria-checked="false"
+            role="radio"
+          >
+            AA — Large (3:1)
+          </button>
+          <button
+            type="button"
+            class="pattern-wcag-option"
+            id="wcag-aaa-normal"
+            data-preset="aaa-normal"
+            data-level="AAA"
+            data-size="normal"
+            aria-checked="false"
+            role="radio"
+          >
+            AAA — Normal (7:1)
+          </button>
+          <button
+            type="button"
+            class="pattern-wcag-option"
+            id="wcag-aaa-large"
+            data-preset="aaa-large"
+            data-level="AAA"
+            data-size="large"
+            aria-checked="false"
+            role="radio"
+          >
+            AAA — Large (4.5:1)
+          </button>
+        </div>
+        <div id="color-display" class="pattern-color-columns">
+          <div class="pattern-color-column pattern-color-column--light">
+            <div class="pattern-column-title">Light theme</div>
+            <div id="color-display-light" class="pattern-color-swatch-stack"></div>
+          </div>
+          <div class="pattern-color-column pattern-color-column--dark">
+            <div class="pattern-column-title">Dark theme</div>
+            <div id="color-display-dark" class="pattern-color-swatch-stack"></div>
+          </div>
+        </div>
         <div id="contrastResult" style="margin-top: 1em"></div>
-        <button id="generate">Generate</button>
       </div>
     </div>
+
+    <script type="module">
+      /** Must match `MESSAGE.WCAG_PATTERN_TARGET` in constants/constants.ts */
+      const WCAG_PATTERN_TARGET = 'WCAG_PATTERN_TARGET';
+
+      const lightStack = document.getElementById('color-display-light');
+      const darkStack = document.getElementById('color-display-dark');
+
+
+      /** Preset key aligned with `WCAG_PATTERN_PRESET_TARGETS` in features/color-pattern.ts */
+      let preset = 'aa-normal';
+
+      document.getElementById('back').onclick = () => {
+        parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*');
+      };
+
+
+      document.querySelectorAll('.pattern-wcag-option').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const next = btn.getAttribute('data-preset');
+          if (!next) return;
+          preset = next;
+          document.querySelectorAll('.pattern-wcag-option').forEach((b) => {
+            b.classList.remove('pattern-wcag-option--active');
+            b.setAttribute('aria-checked', 'false');
+          });
+          btn.classList.add('pattern-wcag-option--active');
+          btn.setAttribute('aria-checked', 'true');
+          requestWcagTargetRefresh();
+        });
+      });
+
+      function requestWcagTargetRefresh() {
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: WCAG_PATTERN_TARGET,
+              preset,
+            },
+          },
+          '*'
+        );
+      }
+
+      function requestGenerate() {
+        loadingScreen();
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: 'GENERATE',
+              preset,
+            },
+          },
+          '*'
+        );
+      }
+
+      function renderDualPalettes(lightHexes, darkHexes) {
+        if (
+          !lightHexes ||
+          lightHexes.length < 5 ||
+          !darkHexes ||
+          darkHexes.length < 5
+        ) {
+          const err = '<p>Could not load colors.</p>';
+          if (lightStack) lightStack.innerHTML = err;
+          if (darkStack) darkStack.innerHTML = err;
+          return;
+        }
+        const buildColumn = (hexes, column) =>
+          hexes
+            .map(
+              (hex, index) =>
+                `<button type="button" id="display-area-${column}-${index}" title="${hex}" style="background-color: ${hex};"></button>`
+            )
+            .join('');
+        lightStack.innerHTML = buildColumn(lightHexes, 'light');
+        darkStack.innerHTML = buildColumn(darkHexes, 'dark');
+        lightHexes.forEach((_hex, index) => {
+          const id = `display-area-light-${index}`;
+          const button = document.getElementById(id);
+          if (button) {
+            button.addEventListener('click', () => buttonOnClick(id));
+          }
+        });
+        darkHexes.forEach((_hex, index) => {
+          const id = `display-area-dark-${index}`;
+          const button = document.getElementById(id);
+          if (button) {
+            button.addEventListener('click', () => buttonOnClick(id));
+          }
+        });
+      }
+
+      function renderHexColorsLegacy(hexes) {
+        if (!hexes || hexes.length < 5) {
+          const err = '<p>Could not load colors.</p>';
+          if (lightStack) lightStack.innerHTML = err;
+          if (darkStack) darkStack.innerHTML = err;
+          return;
+        }
+        renderDualPalettes(hexes, hexes);
+      }
+
+
+      function buttonOnClick(id) {
+        const button = document.getElementById(id);
+        if (button) {
+          const frameColor = button.title;
+          parent.postMessage({ pluginMessage: { type: 'NOTIFY', frameColor } }, '*');
+        }
+      }
+
+      window.onmessage = (event) => {
+        const msg = event.data.pluginMessage;
+        if (!msg || msg.type !== 'COLOR_PATTERN_PALETTE') return;
+        if (msg.lightTheme && msg.darkTheme) {
+          renderDualPalettes(msg.lightTheme, msg.darkTheme);
+        } else if (msg.colors) {
+          renderHexColorsLegacy(msg.colors);
+        } else {
+          renderDualPalettes(null, null);
+        }
+      };
+    </script>
   </body>
 </html>
-
-<script type="module">
-  const resultDiv = document.getElementById('color-display');
-  const generateBtn = document.getElementById('generate');
-
-  document.getElementById('back').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*');
-  };
-
-  document.getElementById('generate').onclick = () => {
-    requestGenerate();
-  };
-
-  function requestGenerate() {
-    loadingScreen();
-    parent.postMessage({ pluginMessage: { type: 'GENERATE' } }, '*');
-  }
-
-  function renderHexColors(hexes) {
-    if (!hexes || hexes.length < 5) {
-      resultDiv.innerHTML = '<p>Could not load colors.</p>';
-      return;
-    }
-    let html = '';
-    hexes.forEach((hex, index) => {
-      html += `<button type="button" id="display-area-${index}" title="${hex}" style="background-color: ${hex}; width: 100%; height: 4rem; margin-bottom: 1rem; border: none; cursor: pointer;"></button>`;
-    });
-    resultDiv.innerHTML = html;
-    hexes.forEach((_hex, index) => {
-      const button = document.getElementById(`display-area-${index}`);
-      if (button) {
-        button.addEventListener('click', () => buttonOnClick(`display-area-${index}`));
-      }
-    });
-  }
-
-  function loadingScreen() {
-    generateBtn.innerHTML = '<span class="loader"></span> Generate';
-  }
-
-  function resetGenerateButton() {
-    generateBtn.textContent = 'Generate';
-  }
-
-  function buttonOnClick(id) {
-    const button = document.getElementById(id);
-    if (button) {
-      const frameColor = button.title;
-      parent.postMessage({ pluginMessage: { type: 'NOTIFY', frameColor } }, '*');
-    }
-  }
-
-  window.onmessage = (event) => {
-    const msg = event.data.pluginMessage;
-    if (!msg || msg.type !== 'COLOR_PATTERN_PALETTE') return;
-    const { colors } = msg;
-    renderHexColors(colors);
-    resetGenerateButton();
-  };
-</script>
