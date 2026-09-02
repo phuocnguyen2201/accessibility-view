@@ -99,8 +99,8 @@
             aria-checked="true"
             role="radio"
           >
-            AA — Normal (4.5:1)
-          </button>
+          AA — Normal (4.5:1)
+      </button>
           <button
             type="button"
             class="pattern-wcag-option"
@@ -111,7 +111,7 @@
             aria-checked="false"
             role="radio"
           >
-            AA — Large (3:1)
+          AA — Large (3:1)
           </button>
           <button
             type="button"
@@ -149,6 +149,12 @@
           </div>
         </div>
         <div id="contrastResult" style="margin-top: 1em"></div>
+        <div>
+          <p>Do you want to generate a new color pattern?</p>
+          <button id="generate" type="button">
+            Generate
+          </button>
+        </div>
       </div>
     </div>
 
@@ -166,6 +172,8 @@
       document.getElementById('back').onclick = () => {
         parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*');
       };
+
+      document.getElementById('generate').addEventListener('click', requestGenerate);
 
 
       document.querySelectorAll('.pattern-wcag-option').forEach((btn) => {
@@ -196,7 +204,6 @@
       }
 
       function requestGenerate() {
-        loadingScreen();
         parent.postMessage(
           {
             pluginMessage: {

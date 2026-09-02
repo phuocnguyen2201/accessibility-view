@@ -1,4 +1,4 @@
-import { FILL_TYPES, MESSAGE, NOTIFY_MESSAGES } from "../constants/constants";
+import { FILL_TYPES, MESSAGE } from "../constants/constants";
 
 // Color blindness simulation matrices (for linear color space)
 const COLOR_BLINDNESS_MATRICES = {
@@ -124,9 +124,9 @@ export function clearAllVisionSimulationFrames() {
     { key: MESSAGE.COLOR_BLINDNESS.KEY.TRITANOPIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.TRITANOPIA },
     { key: MESSAGE.COLOR_BLINDNESS.KEY.ACHROMATOPSIA, label: MESSAGE.COLOR_BLINDNESS.LABEL.ACHROMATOPSIA },
   ];
-  const simulationLabels = types.map(t => t.label);
+  const simulationLabels = new Set(types.map(t => t.label));
   const framesToRemove = figma.currentPage.findAll(
-    n => n.type === "FRAME" && simulationLabels.includes(n.name)
+    n => n.type === "FRAME" && simulationLabels.has(n.name)
   );
   for (const frame of framesToRemove) {
     frame.remove();

@@ -35,8 +35,8 @@ export function checkContrastWithOnChangeColors(frameColor: string, textColor: s
 
 export function applyNewColorsToTheFrame(selection: SceneNode,frameColor: string, textColor: string){
   //let message = frameColor != undefined? frameColor: textColor;
-debugger;
-  if (selection && selection.type === 'FRAME') {
+
+  if (selection?.type === 'FRAME') {
     // Set frame background color as before
     if ('fills' in selection && Array.isArray(selection.fills) && selection.fills.length > 0 && selection.fills[0].type === 'SOLID') {
       const colors = hexToRgb(frameColor);
@@ -68,7 +68,7 @@ debugger;
       }
     }
   }
-  else if (selection && selection.type === 'TEXT'){
+  else if (selection?.type === 'TEXT'){
     const colors = hexToRgb(textColor);
     const newFill = {
       type: 'SOLID' as const,
@@ -82,9 +82,13 @@ debugger;
   }
 }
 
+function pad2(x: string) { 
+  return x.length === 1 ? '0' + x : x; 
+}
+
 function rgbToHex(r: number, g: number, b: number): string {
     const to255 = (v: number) => Math.round(v * 255);
-    function pad2(x: string) { return x.length === 1 ? '0' + x : x; }
+   
     return (
       '#' +
       [to255(r), to255(g), to255(b)]
@@ -106,7 +110,7 @@ function rgbToHex(r: number, g: number, b: number): string {
     if (hex.length === 3) {
       hex = hex.split('').map((x) => x + x).join('');
     }
-    const num = parseInt(hex, 16);
+    const num = Number.parseInt(hex, 16);
     return [(num >> 16) & 255, (num >> 8) & 255, num & 255];
   }
    function getContrastRatio(hex1: string, hex2: string) {
