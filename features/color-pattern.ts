@@ -112,7 +112,43 @@ export function rgbToHex(rgb: Rgb): string {
   );
 }
 
-function hslToRgb(h: number, s: number, l: number): Rgb {
+/** Lowercase `#rrggbb` (with or without `#`, 3- or 6-digit) to 0–255 RGB. */
+export function hexToRgb(hex: string): Rgb {
+  let normalized = hex.replace('#', '');
+  if (normalized.length === 3) {
+    normalized = normalized.split('').map((c) => c + c).join('');
+  }
+  const num = Number.parseInt(normalized, 16);
+  return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+}
+
+/** RGB (0–255) to HSL (`h` in degrees 0–360, `s`/`l` in 0–1). */
+export function rgbToHsl(rgb: Rgb): { h: number; s: number; l: number } {
+  const r = rgb.r / 255;
+  const g = rgb.g / 255;
+  const b = rgb.b / 255;
+  const max = Math.max(r, g, b);
+  const min = Math.min(r, g, b);
+  const l = (max + min) / 2;
+  if (max === min) return { h: 0, s: 0, l };
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  let h: number;
+  switch (max) {
+    case r:
+      h = (g - b) / d + (g < b ? 6 : 0);
+      break;
+    case g:
+      h = (b - r) / d + 2;
+      break;
+    default:
+      h = (r - g) / d + 4;
+      break;
+  }
+  return { h: h * 60, s, l };
+}
+
+export function hslToRgb(h: number, s: number, l: number): Rgb {
   const hue = ((h % 360) + 360) % 360;
   const c = (1 - Math.abs(2 * l - 1)) * s;
   const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
@@ -150,7 +186,7 @@ function hslToRgb(h: number, s: number, l: number): Rgb {
  * Highest lightness in HSL (s fixed) such that `color` vs `background` ≥ minRatio.
  * Produces saturated, accessible foregrounds on light backgrounds (or dark fg on white).
  */
-function maxLightnessForContrast(
+export function maxLightnessForContrast(
   hue: number,
   saturation: number,
   background: Rgb,
@@ -171,7 +207,7 @@ function maxLightnessForContrast(
 }
 
 /** Darkest acceptable HSL lightness (saturation fixed) with contrast ≥ minRatio on a dark background. */
-function minLightnessForContrast(
+export function minLightnessForContrast(
   hue: number,
   saturation: number,
   background: Rgb,

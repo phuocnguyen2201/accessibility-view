@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      .pa-subtitle {
+        font-size: 12px;
+        opacity: 0.75;
+        margin: -0.5em 0 1.1em;
+      }
+      .pa-section-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        opacity: 0.7;
+        margin: 1.2em 0 0.6em;
+      }
+      .pa-color-row {
+        display: flex;
+        align-items: center;
+        gap: 0.6em;
+        margin-bottom: 0.5em;
+      }
+      .pa-swatch {
+        width: 28px;
+        height: 28px;
+        border-radius: 6px;
+        flex-shrink: 0;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+      }
+      .pa-color-name {
+        flex: 1;
+        min-width: 0;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .pa-color-hex {
+        font-family: monospace;
+        font-size: 11px;
+        opacity: 0.7;
+        margin-right: 0.4em;
+      }
+      .pa-role-select {
+        width: auto;
+        margin-bottom: 0;
+        font-size: 12px;
+        padding: 0.3em 0.4em;
+      }
+
+      .pa-target-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 0.6em;
+      }
+      .pa-target-row button {
+        width: 100%;
+        min-height: 2.1rem;
+        margin-bottom: 0;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .pa-target-row button.pa-target-active {
+        box-shadow: inset 0 0 0 2px currentColor;
+      }
+      .pa-filter-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 0.8em;
+      }
+      .pa-filter-row label {
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+        font-size: 12px;
+        font-weight: 500;
+        margin-bottom: 0;
+        cursor: pointer;
+      }
+      .pa-filter-row button {
+        width: auto;
+        min-height: 2rem;
+        margin-bottom: 0;
+        font-size: 12px;
+        padding: 0.35em 0.8em;
+      }
+
+      .pa-matrix-scroll {
+        overflow-x: auto;
+        margin-bottom: 1em;
+      }
+      .pa-matrix {
+        border-collapse: collapse;
+        font-size: 11px;
+      }
+      .pa-matrix th,
+      .pa-matrix td {
+        border: 1px solid #ddd;
+        padding: 0.4em 0.5em;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .pa-matrix th.pa-corner {
+        background: transparent;
+        border: none;
+      }
+      .pa-col-swatch,
+      .pa-row-swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+        display: inline-block;
+        margin-right: 0.3em;
+        vertical-align: middle;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+      }
+      .pa-row-label {
+        text-align: left;
+        font-weight: 600;
+      }
+      .pa-cell {
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .pa-cell--pass { background: #1e6b2e; color: #eafbea; }
+      .pa-cell--fail { background: #7a1f1f; color: #fdecec; }
+      .pa-cell.pa-cell--selected { outline: 2px solid #2f6fed; outline-offset: -2px; }
+
+      .pa-suggest-panel {
+        background: #fafafa;
+        border-radius: 8px;
+        padding: 0.9em;
+        margin-bottom: 1em;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+      }
+      .pa-suggest-title {
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 0.6em;
+      }
+      .pa-suggest-swatches {
+        display: flex;
+        gap: 0.6em;
+        flex-wrap: wrap;
+      }
+      .pa-suggest-swatch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3em;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        padding: 0;
+        width: auto;
+        min-height: 0;
+        margin: 0;
+      }
+      .pa-suggest-swatch-color {
+        width: 34px;
+        height: 34px;
+        border-radius: 6px;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
+      }
+      .pa-suggest-swatch-hex {
+        font-family: monospace;
+        font-size: 10px;
+      }
+
+      .pa-export-btn {
+        background: #2f6fed;
+        color: #ffffff;
+        border: none;
+      }
+      .pa-export-btn:hover { background: #2559c4; }
+      .pa-export-btn:active { background: #1e469c; }
+
+      .pa-empty {
+        font-size: 13px;
+        opacity: 0.75;
+        text-align: center;
+        padding: 2em 1em;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .pa-matrix th, .pa-matrix td { border-color: #444; }
+        .pa-suggest-panel {
+          background: #23272b;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+      }
+    </style>
+  </head>
+  <body id="dark">
+    <div class="container">
+      <button id="back">Back</button>
+      <div id="color-contrast-tool">
+        <div class="pa-subtitle">Tag your local color styles by role, then see every meaningful pair scored at once.</div>
+
+        <div class="pa-section-title">Local color styles</div>
+        <div id="colors-list"></div>
+
+        <div class="pa-section-title">Text pair target</div>
+        <div class="pa-target-row" id="target-row">
+          <button type="button" data-level="AA" data-size="normal" class="pa-target-active">AA · Normal</button>
+          <button type="button" data-level="AA" data-size="large">AA · Large</button>
+          <button type="button" data-level="AAA" data-size="normal">AAA · Normal</button>
+          <button type="button" data-level="AAA" data-size="large">AAA · Large</button>
+        </div>
+
+        <div class="pa-section-title">Matrix</div>
+        <div class="pa-filter-row">
+          <label>
+            <input type="checkbox" id="failures-only" />
+            Failures only
+          </label>
+          <button type="button" class="pa-export-btn" id="export-csv">Export CSV</button>
+        </div>
+
+        <div id="matrix-container"></div>
+        <div id="suggest-container"></div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script type="module">
+  /** Must match `MESSAGE` in constants/constants.ts */
+  const MESSAGE = {
+    BACK: 'BACK',
+    PALETTE_AUDIT: {
+      GET_COLORS: 'PALETTE_AUDIT_GET_COLORS',
+      COLORS: 'PALETTE_AUDIT_COLORS',
+      SET_ROLE: 'PALETTE_AUDIT_SET_ROLE',
+      SUGGEST_FIX: 'PALETTE_AUDIT_SUGGEST_FIX',
+      SUGGESTIONS: 'PALETTE_AUDIT_SUGGESTIONS',
+    },
+  };
+
+  const ROLE_OPTIONS = [
+    { value: '', label: 'Untagged' },
+    { value: 'text', label: 'Text' },
+    { value: 'background', label: 'Background' },
+    { value: 'accent-icon', label: 'Accent / Icon' },
+    { value: 'surface', label: 'Surface' },
+  ];
+
+  const state = {
+    colors: [],
+    matrix: [],
+    target: { level: 'AA', size: 'normal' },
+    failuresOnly: false,
+    selectedCell: null,
+    suggestions: null,
+  };
+
+  function minRatioFor(level, size) {
+    if (level === 'AA') return size === 'large' ? 3 : 4.5;
+    return size === 'large' ? 4.5 : 7;
+  }
+
+  function thresholdFor(cell) {
+    return cell.pairType === 'non-text' ? 3 : minRatioFor(state.target.level, state.target.size);
+  }
+
+  function renderColorsList() {
+    const container = document.getElementById('colors-list');
+    container.innerHTML = '';
+
+    if (state.colors.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'pa-empty';
+      empty.textContent = 'No local color styles found. Create Figma color styles to audit them.';
+      container.appendChild(empty);
+      return;
+    }
+
+    for (const color of state.colors) {
+      const row = document.createElement('div');
+      row.className = 'pa-color-row';
+
+      const swatch = document.createElement('div');
+      swatch.className = 'pa-swatch';
+      swatch.style.backgroundColor = color.hex;
+      row.appendChild(swatch);
+
+      const name = document.createElement('div');
+      name.className = 'pa-color-name';
+      name.textContent = color.name;
+      row.appendChild(name);
+
+      const hex = document.createElement('span');
+      hex.className = 'pa-color-hex';
+      hex.textContent = color.hex.toUpperCase();
+      row.appendChild(hex);
+
+      const select = document.createElement('select');
+      select.className = 'pa-role-select';
+      for (const opt of ROLE_OPTIONS) {
+        const optionEl = document.createElement('option');
+        optionEl.value = opt.value;
+        optionEl.textContent = opt.label;
+        if ((color.role || '') === opt.value) optionEl.selected = true;
+        select.appendChild(optionEl);
+      }
+      select.addEventListener('change', (e) => {
+        parent.postMessage(
+          {
+            pluginMessage: {
+              type: MESSAGE.PALETTE_AUDIT.SET_ROLE,
+              styleId: color.id,
+              role: e.target.value,
+            },
+          },
+          '*'
+        );
+      });
+      row.appendChild(select);
+
+      container.appendChild(row);
+    }
+  }
+
+  function renderMatrix() {
+    const container = document.getElementById('matrix-container');
+    container.innerHTML = '';
+
+    const backgrounds = [];
+    const foregrounds = [];
+    for (const cell of state.matrix) {
+      if (!backgrounds.find((b) => b.id === cell.bgId)) backgrounds.push({ id: cell.bgId, name: cell.bgName, hex: cell.bgHex });
+      if (!foregrounds.find((f) => f.id === cell.fgId)) foregrounds.push({ id: cell.fgId, name: cell.fgName, hex: cell.fgHex });
+    }
+
+    if (backgrounds.length === 0 || foregrounds.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'pa-empty';
+      empty.textContent = 'Tag at least one background/surface color and one text/accent-icon color to build the matrix.';
+      container.appendChild(empty);
+      return;
+    }
+
+    const scroll = document.createElement('div');
+    scroll.className = 'pa-matrix-scroll';
+    const table = document.createElement('table');
+    table.className = 'pa-matrix';
+
+    const headRow = document.createElement('tr');
+    const corner = document.createElement('th');
+    corner.className = 'pa-corner';
+    headRow.appendChild(corner);
+    for (const fg of foregrounds) {
+      const th = document.createElement('th');
+      const dot = document.createElement('span');
+      dot.className = 'pa-col-swatch';
+      dot.style.backgroundColor = fg.hex;
+      th.appendChild(dot);
+      th.appendChild(document.createTextNode(fg.name));
+      headRow.appendChild(th);
+    }
+    table.appendChild(headRow);
+
+    for (const bg of backgrounds) {
+      const row = document.createElement('tr');
+      const rowLabel = document.createElement('td');
+      rowLabel.className = 'pa-row-label';
+      const dot = document.createElement('span');
+      dot.className = 'pa-row-swatch';
+      dot.style.backgroundColor = bg.hex;
+      rowLabel.appendChild(dot);
+      rowLabel.appendChild(document.createTextNode(bg.name));
+      row.appendChild(rowLabel);
+
+      for (const fg of foregrounds) {
+        const cell = state.matrix.find((c) => c.bgId === bg.id && c.fgId === fg.id);
+        const td = document.createElement('td');
+        if (!cell) {
+          td.textContent = '—';
+          row.appendChild(td);
+          continue;
+        }
+        const threshold = thresholdFor(cell);
+        const pass = cell.ratio >= threshold;
+        if (state.failuresOnly && pass) {
+          td.textContent = '';
+          row.appendChild(td);
+          continue;
+        }
+        td.className = 'pa-cell ' + (pass ? 'pa-cell--pass' : 'pa-cell--fail');
+        if (
+          state.selectedCell &&
+          state.selectedCell.bgId === cell.bgId &&
+          state.selectedCell.fgId === cell.fgId
+        ) {
+          td.classList.add('pa-cell--selected');
+        }
+        td.textContent = cell.ratio.toFixed(1) + ':1';
+        td.title = fg.name + ' on ' + bg.name + ' — ' + (pass ? 'Pass' : 'Fail') + ' (needs ' + threshold + ':1)';
+        td.addEventListener('click', () => {
+          if (pass) return;
+          state.selectedCell = { bgId: cell.bgId, fgId: cell.fgId };
+          state.suggestions = null;
+          renderMatrix();
+          renderSuggestPanel();
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: MESSAGE.PALETTE_AUDIT.SUGGEST_FIX,
+                fgId: cell.fgId,
+                bgId: cell.bgId,
+                minRatio: threshold,
+              },
+            },
+            '*'
+          );
+        });
+        row.appendChild(td);
+      }
+      table.appendChild(row);
+    }
+
+    scroll.appendChild(table);
+    container.appendChild(scroll);
+  }
+
+  function renderSuggestPanel() {
+    const container = document.getElementById('suggest-container');
+    container.innerHTML = '';
+    if (!state.selectedCell) return;
+
+    const cell = state.matrix.find(
+      (c) => c.bgId === state.selectedCell.bgId && c.fgId === state.selectedCell.fgId
+    );
+    if (!cell) return;
+
+    const panel = document.createElement('div');
+    panel.className = 'pa-suggest-panel';
+
+    const title = document.createElement('div');
+    title.className = 'pa-suggest-title';
+    title.textContent = 'Suggested fixes for ' + cell.fgName + ' on ' + cell.bgName;
+    panel.appendChild(title);
+
+    if (!state.suggestions) {
+      const loading = document.createElement('div');
+      loading.textContent = 'Calculating…';
+      panel.appendChild(loading);
+    } else if (state.suggestions.length === 0) {
+      const none = document.createElement('div');
+      none.textContent = 'No adjustment found within this hue/saturation.';
+      panel.appendChild(none);
+    } else {
+      const swatches = document.createElement('div');
+      swatches.className = 'pa-suggest-swatches';
+      for (const hex of state.suggestions) {
+        const btn = document.createElement('button');
+        btn.className = 'pa-suggest-swatch';
+        btn.type = 'button';
+        const colorBox = document.createElement('div');
+        colorBox.className = 'pa-suggest-swatch-color';
+        colorBox.style.backgroundColor = hex;
+        const label = document.createElement('span');
+        label.className = 'pa-suggest-swatch-hex';
+        label.textContent = hex.toUpperCase();
+        btn.appendChild(colorBox);
+        btn.appendChild(label);
+        btn.addEventListener('click', async () => {
+          try {
+            await navigator.clipboard.writeText(hex);
+          } catch (err) {
+            // Clipboard API unavailable; the hex is still visible to copy manually.
+          }
+        });
+        swatches.appendChild(btn);
+      }
+      panel.appendChild(swatches);
+    }
+
+    container.appendChild(panel);
+  }
+
+  function renderTargetButtons() {
+    document.querySelectorAll('#target-row button').forEach((btn) => {
+      const isActive = btn.dataset.level === state.target.level && btn.dataset.size === state.target.size;
+      btn.classList.toggle('pa-target-active', isActive);
+    });
+  }
+
+  function renderAll() {
+    renderColorsList();
+    renderTargetButtons();
+    renderMatrix();
+    renderSuggestPanel();
+  }
+
+  document.getElementById('back').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: MESSAGE.BACK } }, '*');
+  };
+
+  document.querySelectorAll('#target-row button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.target = { level: btn.dataset.level, size: btn.dataset.size };
+      renderAll();
+    });
+  });
+
+  document.getElementById('failures-only').addEventListener('change', (e) => {
+    state.failuresOnly = e.target.checked;
+    renderMatrix();
+  });
+
+  document.getElementById('export-csv').addEventListener('click', () => {
+    const rows = [['Background', 'Background hex', 'Foreground', 'Foreground hex', 'Pair type', 'Ratio', 'Threshold', 'Result']];
+    for (const cell of state.matrix) {
+      const threshold = thresholdFor(cell);
+      const pass = cell.ratio >= threshold;
+      rows.push([
+        cell.bgName,
+        cell.bgHex,
+        cell.fgName,
+        cell.fgHex,
+        cell.pairType,
+        cell.ratio.toFixed(2),
+        threshold.toString(),
+        pass ? 'Pass' : 'Fail',
+      ]);
+    }
+    const csv = rows
+      .map((r) => r.map((v) => '"' + String(v).replace(/"/g, '""') + '"').join(','))
+      .join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'palette-audit.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  });
+
+  window.onmessage = (event) => {
+    const msg = event.data.pluginMessage;
+    if (!msg) return;
+    if (msg.type === MESSAGE.PALETTE_AUDIT.COLORS) {
+      state.colors = msg.colors || [];
+      state.matrix = msg.matrix || [];
+      renderAll();
+    } else if (msg.type === MESSAGE.PALETTE_AUDIT.SUGGESTIONS) {
+      if (
+        state.selectedCell &&
+        state.selectedCell.fgId === msg.fgId &&
+        state.selectedCell.bgId === msg.bgId
+      ) {
+        state.suggestions = msg.suggestions || [];
+        renderSuggestPanel();
+      }
+    }
+  };
+
+  parent.postMessage({ pluginMessage: { type: MESSAGE.PALETTE_AUDIT.GET_COLORS } }, '*');
+  renderAll();
+</script>

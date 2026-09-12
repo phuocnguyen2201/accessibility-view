@@ -2,137 +2,560 @@
 <html>
   <head>
     <meta charset="UTF-8" />
+    <style>
+      .mode-toggle {
+        display: flex;
+        background: #ececec;
+        border-radius: 8px;
+        padding: 4px;
+        gap: 4px;
+        margin-bottom: 1.1em;
+      }
+      .mode-option {
+        flex: 1;
+        min-height: 2.25rem;
+        margin-bottom: 0;
+        font-size: 13px;
+        font-weight: 600;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+      }
+      .mode-option--active {
+        background: #ffffff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+      }
+
+      .preview-box {
+        width: 100%;
+        min-height: 140px;
+        box-sizing: border-box;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.1em;
+      }
+      .preview-text {
+        font-size: 56px;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .preview-ui-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 10px;
+        border-style: solid;
+        border-width: 4px;
+        background: transparent;
+      }
+
+      .size-toggle {
+        display: flex;
+        gap: 1.5em;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.25em;
+        font-size: 13px;
+      }
+      .size-option {
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+        margin-bottom: 0;
+        font-weight: 500;
+        cursor: pointer;
+      }
+      .size-option input {
+        margin: 0;
+        cursor: pointer;
+      }
+
+      .color-row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 0.75em;
+        margin-bottom: 1.25em;
+      }
+      .color-field {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.35em;
+        flex: 1;
+        min-width: 0;
+      }
+      .hex-row {
+        display: flex;
+        align-items: center;
+        gap: 0.3em;
+      }
+      .hex-code {
+        font-family: monospace;
+        font-size: 12px;
+        padding: 0.3em 0.5em;
+        background: #f0f0f0;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+        white-space: nowrap;
+      }
+      .copy-btn {
+        width: 1.75rem;
+        height: 1.75rem;
+        min-height: 0;
+        padding: 0;
+        margin: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        flex-shrink: 0;
+      }
+      .copy-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+      .copy-btn--copied {
+        color: #2e7d32;
+      }
+      .color-field-label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        opacity: 0.65;
+      }
+      .swap-btn {
+        width: 2.5rem;
+        height: 2.5rem;
+        min-height: 0;
+        padding: 0;
+        margin-top: 1.6rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      .result-card {
+        border-radius: 12px;
+        padding: 1em 1.1em;
+        margin-bottom: 1.25em;
+        transition: background-color 0.15s, color 0.15s;
+      }
+      .result-card--pass {
+        background: #1e6b2e;
+        color: #eafbea;
+      }
+      .result-card--warn {
+        background: #7a5b00;
+        color: #fff6df;
+      }
+      .result-card--fail {
+        background: #7a1f1f;
+        color: #fdecec;
+      }
+      .result-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5em;
+      }
+      .result-status {
+        display: flex;
+        align-items: center;
+        gap: 0.5em;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .result-icon {
+        font-size: 16px;
+        line-height: 1;
+      }
+      .result-ratio {
+        font-size: 22px;
+        font-weight: 800;
+        white-space: nowrap;
+      }
+      .contrast-bar-track {
+        position: relative;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.25);
+        margin: 1.6em 0 0.5em;
+      }
+      .contrast-bar-fill {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+      }
+      .bar-current {
+        position: absolute;
+        top: 50%;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 2px solid currentColor;
+        transform: translate(-50%, -50%);
+      }
+      .bar-marker {
+        position: absolute;
+        top: -14px;
+        transform: translateX(-50%);
+        font-size: 10px;
+        opacity: 0.85;
+        white-space: nowrap;
+      }
+      .bar-marker::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 14px;
+        width: 1px;
+        height: 10px;
+        background: currentColor;
+        opacity: 0.6;
+      }
+      .bar-scale-label {
+        font-size: 10px;
+        opacity: 0.7;
+      }
+
+      .save-btn {
+        background: #2f6fed;
+        color: #ffffff;
+        border: none;
+        margin-bottom: 0;
+      }
+      .save-btn:hover {
+        background: #2559c4;
+      }
+      .save-btn:active {
+        background: #1e469c;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .mode-toggle {
+          background: #141617;
+        }
+        .mode-option--active {
+          background: #33383d;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+        .hex-code {
+          background: #23272b;
+          border-color: #444;
+          color: #f3f3f3;
+        }
+      }
+    </style>
   </head>
-  <body id='dark'>
+  <body id="dark">
     <div class="container">
       <button id="back">Back</button>
       <div id="color-contrast-tool">
-        <div id="contrastResult" style="margin-top: 1em;">      
-
+        <div class="mode-toggle" role="tablist" aria-label="Contrast check mode">
+          <button type="button" class="mode-option mode-option--active" id="mode-text" data-mode="text" role="tab" aria-selected="true">Text</button>
+          <button type="button" class="mode-option" id="mode-ui" data-mode="ui-element" role="tab" aria-selected="false">UI element</button>
         </div>
+
+        <div class="preview-box" id="preview-box">
+          <span class="preview-text" id="preview-text">Aa</span>
+          <div class="preview-ui" id="preview-ui" hidden>
+            <div class="preview-ui-icon" id="preview-ui-shape"></div>
+          </div>
+        </div>
+
+        <div class="size-toggle" id="size-toggle" role="radiogroup" aria-label="Text size">
+          <label class="size-option">
+            <input type="radio" name="text-size" id="size-normal" value="normal" checked />
+            Normal text
+          </label>
+          <label class="size-option">
+            <input type="radio" name="text-size" id="size-large" value="large" />
+            Large text (18pt+)
+          </label>
+        </div>
+
+        <div class="color-row">
+          <div class="color-field">
+            <input class="color-picker" type="color" id="frameColorPicker" value="#ffffff" />
+            <div class="hex-row">
+              <span class="hex-code" id="frameColorCode">#FFFFFF</span>
+              <button type="button" class="copy-btn" id="copyFrameColor" aria-label="Copy background hex code">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2" />
+                  <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="2" />
+                </svg>
+              </button>
+            </div>
+            <span class="color-field-label">Background</span>
+          </div>
+
+          <button type="button" id="swap-text-frame" class="swap-btn" aria-label="Swap colors">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M8 7L3 12L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+
+          <div class="color-field">
+            <input class="color-picker" type="color" id="textColorPicker" value="#000000" />
+            <div class="hex-row">
+              <span class="hex-code" id="textColorCode">#000000</span>
+              <button type="button" class="copy-btn" id="copyTextColor" aria-label="Copy foreground hex code">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2" />
+                  <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" stroke="currentColor" stroke-width="2" />
+                </svg>
+              </button>
+            </div>
+            <span class="color-field-label" id="foreground-label">Text</span>
+          </div>
+        </div>
+
+        <div class="result-card" id="result-card">
+          <div class="result-top">
+            <div class="result-status">
+              <span class="result-icon" id="result-icon">✓</span>
+              <span id="result-label">—</span>
+            </div>
+            <div class="result-ratio" id="result-ratio">—</div>
+          </div>
+          <div class="contrast-bar-track" id="bar-track">
+            <div class="contrast-bar-fill" id="bar-fill"></div>
+            <div class="bar-current" id="bar-current"></div>
+            <div class="bar-marker" id="marker-3"><span>3:1</span></div>
+            <div class="bar-marker" id="marker-45"><span>4.5:1</span></div>
+            <div class="bar-marker" id="marker-7"><span>7:1</span></div>
+          </div>
+          <div class="bar-scale-label">1:1</div>
+        </div>
+
+        <button type="button" id="save-pair-btn" class="save-btn">Save pair to palette</button>
       </div>
     </div>
   </body>
 </html>
 
 <script type="module">
+  /** Must match `MESSAGE` in constants/constants.ts */
+  const MESSAGE = {
+    RES_CONTRAST: 'RES_CONSTRAST',
+    BACK: 'BACK',
+    CHANGE_COLOR: 'CHANGE-COLOR',
+    SWAP: 'SWAP',
+    SHOW_TOAST: 'SHOW_TOAST',
+    SAVE_PALETTE_PAIR: 'SAVE_PALETTE_PAIR',
+  };
 
+  const state = {
+    frameColor: '#ffffff',
+    textColor: '#000000',
+    contrast: 1,
+    mode: 'text', // 'text' | 'ui-element'
+    textSize: 'normal', // 'normal' | 'large'
+  };
+
+  const els = {
+    previewBox: document.getElementById('preview-box'),
+    previewText: document.getElementById('preview-text'),
+    previewUi: document.getElementById('preview-ui'),
+    previewUiShape: document.getElementById('preview-ui-shape'),
+    sizeToggle: document.getElementById('size-toggle'),
+    foregroundLabel: document.getElementById('foreground-label'),
+    frameColorPicker: document.getElementById('frameColorPicker'),
+    textColorPicker: document.getElementById('textColorPicker'),
+    frameColorCode: document.getElementById('frameColorCode'),
+    textColorCode: document.getElementById('textColorCode'),
+    resultCard: document.getElementById('result-card'),
+    resultIcon: document.getElementById('result-icon'),
+    resultLabel: document.getElementById('result-label'),
+    resultRatio: document.getElementById('result-ratio'),
+    barFill: document.getElementById('bar-fill'),
+    barCurrent: document.getElementById('bar-current'),
+    marker3: document.getElementById('marker-3'),
+    marker45: document.getElementById('marker-45'),
+    marker7: document.getElementById('marker-7'),
+  };
+
+  const MAX_RATIO = 21;
+
+  function ratioToPercent(ratio) {
+    const clamped = Math.min(Math.max(ratio, 1), MAX_RATIO);
+    return (Math.log10(clamped) / Math.log10(MAX_RATIO)) * 100;
+  }
+
+  function evaluate() {
+    const { contrast, mode, textSize } = state;
+    if (mode === 'ui-element') {
+      const pass = contrast >= 3;
+      return {
+        pass,
+        label: pass ? 'Passes non-text contrast' : 'Fails non-text contrast (3:1 required)',
+        severity: pass ? 'pass' : 'fail',
+      };
+    }
+    const aaThreshold = textSize === 'large' ? 3 : 4.5;
+    const aaaThreshold = textSize === 'large' ? 4.5 : 7;
+    const passAA = contrast >= aaThreshold;
+    const passAAA = contrast >= aaaThreshold;
+    if (passAAA) return { pass: true, label: 'Passes AA and AAA', severity: 'pass' };
+    if (passAA) return { pass: true, label: 'Passes AA only', severity: 'warn' };
+    return { pass: false, label: 'Fails AA', severity: 'fail' };
+  }
+
+  function render() {
+    // Preview
+    els.previewBox.style.backgroundColor = state.frameColor;
+    els.previewText.style.color = state.textColor;
+    els.previewUiShape.style.borderColor = state.textColor;
+    const isTextMode = state.mode === 'text';
+    els.previewText.hidden = !isTextMode;
+    els.previewUi.hidden = isTextMode;
+    els.sizeToggle.hidden = !isTextMode;
+    els.foregroundLabel.textContent = isTextMode ? 'Text' : 'Element';
+
+    // Colors
+    els.frameColorPicker.value = state.frameColor;
+    els.textColorPicker.value = state.textColor;
+    els.frameColorCode.textContent = state.frameColor.toUpperCase();
+    els.textColorCode.textContent = state.textColor.toUpperCase();
+
+    // Result card
+    const result = evaluate();
+    els.resultCard.className = 'result-card result-card--' + result.severity;
+    els.resultIcon.textContent = result.pass ? '✓' : '✕';
+    els.resultLabel.textContent = result.label;
+    els.resultRatio.textContent = state.contrast.toFixed(1) + ':1';
+
+    const fillPct = ratioToPercent(state.contrast);
+    els.barFill.style.width = fillPct + '%';
+    els.barCurrent.style.left = fillPct + '%';
+
+    els.marker3.style.left = ratioToPercent(3) + '%';
+    els.marker45.style.left = ratioToPercent(4.5) + '%';
+    els.marker7.style.left = ratioToPercent(7) + '%';
+    els.marker45.style.display = isTextMode ? '' : 'none';
+    els.marker7.style.display = isTextMode ? '' : 'none';
+  }
 
   document.getElementById('back').onclick = () => {
-    parent.postMessage({ pluginMessage: { type: 'BACK' } }, '*')
+    parent.postMessage({ pluginMessage: { type: MESSAGE.BACK } }, '*');
+  };
+
+  document.querySelectorAll('.mode-option').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.mode = btn.dataset.mode;
+      document.querySelectorAll('.mode-option').forEach((b) => {
+        b.classList.remove('mode-option--active');
+        b.setAttribute('aria-selected', 'false');
+      });
+      btn.classList.add('mode-option--active');
+      btn.setAttribute('aria-selected', 'true');
+      render();
+    });
+  });
+
+  document.querySelectorAll('input[name="text-size"]').forEach((radio) => {
+    radio.addEventListener('change', (e) => {
+      state.textSize = e.target.value;
+      render();
+    });
+  });
+
+  els.frameColorPicker.addEventListener('input', (e) => {
+    state.frameColor = e.target.value;
+    render();
+  });
+  els.frameColorPicker.addEventListener('change', (e) => {
+    parent.postMessage(
+      { pluginMessage: { type: MESSAGE.CHANGE_COLOR, colorType: 'frame', value: e.target.value, textColor: state.textColor } },
+      '*'
+    );
+  });
+
+  els.textColorPicker.addEventListener('input', (e) => {
+    state.textColor = e.target.value;
+    render();
+  });
+  els.textColorPicker.addEventListener('change', (e) => {
+    parent.postMessage(
+      { pluginMessage: { type: MESSAGE.CHANGE_COLOR, colorType: 'text', value: e.target.value, frameColor: state.frameColor } },
+      '*'
+    );
+  });
+
+  document.getElementById('swap-text-frame').addEventListener('click', () => {
+    const prevFrame = state.frameColor;
+    state.frameColor = state.textColor;
+    state.textColor = prevFrame;
+    render();
+    parent.postMessage(
+      { pluginMessage: { type: MESSAGE.SWAP, frameColor: state.frameColor, textColor: state.textColor } },
+      '*'
+    );
+  });
+
+  function attachCopy(buttonId, getText) {
+    const btn = document.getElementById(buttonId);
+    const originalHtml = btn.innerHTML;
+    btn.addEventListener('click', async () => {
+      const text = getText();
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (err) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      parent.postMessage({ pluginMessage: { type: MESSAGE.SHOW_TOAST, message: 'The Hex code copied to your clipboard' } }, '*');
+      btn.innerHTML = '✓';
+      btn.classList.add('copy-btn--copied');
+      setTimeout(() => {
+        btn.innerHTML = originalHtml;
+        btn.classList.remove('copy-btn--copied');
+      }, 1200);
+    });
   }
+  attachCopy('copyFrameColor', () => els.frameColorCode.textContent);
+  attachCopy('copyTextColor', () => els.textColorCode.textContent);
+
+  document.getElementById('save-pair-btn').addEventListener('click', () => {
+    parent.postMessage(
+      {
+        pluginMessage: {
+          type: MESSAGE.SAVE_PALETTE_PAIR,
+          frameColor: state.frameColor,
+          textColor: state.textColor,
+          contrast: state.contrast,
+          mode: state.mode,
+          textSize: state.textSize,
+        },
+      },
+      '*'
+    );
+  });
 
   window.onmessage = (event) => {
     const msg = event.data.pluginMessage;
-    if (!msg || msg.type !== 'RES_CONSTRAST') return;
-    const { frameColor, textColor, contrast, levels} = msg;
-    const resultDiv = document.getElementById('contrastResult');
-    resultDiv.innerHTML = `
-      <div class="contrast-flex-row">
-        <div class='sample-area' id='sample-area' style="background-color:${frameColor}">
-          <p class='sample-large-text' id='sample-large-text' style="color:${textColor}">AA</p><p class='sample-small-text' id='sample-small-text'  style="color:${textColor}">aa</p>
-          </div>
-      </div>
-      <div class="contrast-flex-row">
-        
-        <div style="text-align:center; width:100%">
-          <input class="color-picker" type="color" id="frameColorPicker" name="colorPicker" value="${frameColor}">
-          <input class="contrast-color-code" id="frameColorCode" value=${frameColor.toUpperCase()} readonly>
-        </div>
-         <div style="text-align:center; width:100%">
-          
-          <button id="swap-text-frame">
-            <svg id="mySvg" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M8 7L3 12L8 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-        </div>
-        <div style="text-align:center; width:100%">
-          <input class="color-picker" type="color" id="textColorPicker" name="colorPicker" value="${textColor}">
-          <input class="contrast-color-code" id="textColorCode" value=${textColor.toUpperCase()} readonly>
-        </div>
-      </div>
-      <div class="contrast-ratio">Contrast Ratio: <b>${contrast.toFixed(2)}:1</b></div>
-      <div style="margin-top: 1em;">
-        <table style="border-collapse: collapse;">
-          <tr>
-            <th></th>
-            <th class='contrast-table-cell-padding'>AA</th>
-            <th class='contrast-table-cell-padding'>AAA</th>
-          </tr>
-          <tr>
-            <td class='contrast-table-row-label'>Large Text</td>
-            <td style='text-align:center;'>${levels.AA_large ? '✅' : '❌'}</td>
-            <td style='text-align:center;'>${levels.AAA_large ? '✅' : '❌'}</td>
-          </tr>
-          <tr>
-            <td class='contrast-table-row-label'>Small Text</td>
-            <td style='text-align:center;'>${levels.AA_small ? '✅' : '❌'}</td>
-            <td style='text-align:center;'>${levels.AAA_small ? '✅' : '❌'}</td>
-          </tr>
-          <tr>
-            <td class='contrast-table-row-label' rowspan="2">Required Ratio</td>
-            <td style='text-align:center;'>3:1</td>
-            <td style='text-align:center;'>4.5:1</td>
-          </tr>
-          <tr>
-            <td style='text-align:center;'>4.5:1</td>
-            <td style='text-align:center;'>7:1</td>
-          </tr>
-        </table>
-        <div class="contrast-table-note">Large text: 18pt+ or 14pt+ bold</div>
-      </div>
-    `;
-
-    // Attach event listeners after rendering
-    const frameColorInput = document.getElementById('frameColorPicker');
-    const textColorInput = document.getElementById('textColorPicker');
-    const btnSwap = document.getElementById('swap-text-frame');
-
-    if (frameColorInput) {
-      document.getElementById('frameColorCode').innerHTML = frameColorInput.value;
-      frameColorInput.onchange = (e) => {
-        parent.postMessage({ pluginMessage: { type: 'CHANGE-COLOR', colorType: 'frame', value: e.target.value, textColor: textColorInput.value } }, '*');
-      };
-    }
-    if (textColorInput) {
-      document.getElementById('textColorCode').innerHTML = textColorInput.value;
-      textColorInput.onchange = (e) => {
-        parent.postMessage({ pluginMessage: { type: 'CHANGE-COLOR', colorType: 'text', value: e.target.value, frameColor: frameColorInput.value } }, '*');
-      };
-    }
-    if (btnSwap) {
-      btnSwap.onclick = () =>{
-        const textValue = textColorInput.value;
-        const frameValue = frameColorInput.value;
-
-        const sampleArea = document.getElementById('sample-area');
-
-        const sampleLargeText = document.getElementById('sample-large-text');
-        const sampleSmallText = document.getElementById('sample-small-text');
-
-        const textColorCode = document.getElementById('textColorCode');
-        const frameColorCode = document.getElementById('frameColorCode');
-
-        if (frameColorInput && textColorInput){
-          frameColorInput.value = textValue;
-          textColorInput.value = frameValue;
-
-          sampleArea.style.backgroundColor = textValue;
-
-          sampleLargeText.style.color = frameValue;
-          sampleSmallText.style.color = frameValue;
-
-          textColorCode.value = frameValue.toUpperCase();
-          frameColorCode.value = textValue.toUpperCase();
-
-          parent.postMessage({ pluginMessage: {type: 'SWAP', frameColor: frameColorInput.value , textColor: textColorInput.value } }, '*');
-        }
-      }
-    }
+    if (!msg || msg.type !== MESSAGE.RES_CONTRAST) return;
+    state.frameColor = msg.frameColor;
+    state.textColor = msg.textColor;
+    state.contrast = msg.contrast;
+    render();
   };
 
+  render();
 </script>
-

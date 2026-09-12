@@ -16,6 +16,20 @@ import { NOTIFY_MESSAGES, MESSAGE } from '../constants/constants';
 import { clearAllVisionSimulationFrames, simulateVision } from '../features/vision-simulation';
 import { checkContrast, checkContrastWithOnChangeColors, applyNewColorsToTheFrame } from '../features/color-contrast';
 import {
+  savePairToPalette,
+  getLocalPaletteColors,
+  setColorRole,
+  computePaletteMatrix,
+  suggestAccessibleFixes,
+  type ColorRole,
+} from '../features/palette-audit';
+import {
+  runNonTextContrastCheck,
+  selectAndZoomToNode,
+  showNonTextBadges,
+  clearNonTextBadges,
+} from '../features/non-text-contrast';
+import {
   getAccessibleColorPatternDualHexes,
   wcagContrastTargetFromPluginFields,
   type WcagContrastTarget,
@@ -53,9 +67,103 @@ type PluginMessage = {
   wcagLevel?: string;
   textSize?: string;
   preset?: string;
+  message?: string;
+  mode?: string;
+  contrast?: number;
+  nodeId?: string;
+  show?: boolean;
+  styleId?: string;
+  role?: string;
+  fgId?: string;
+  bgId?: string;
+  minRatio?: number;
 };
 
+function runAndSendNonTextCheck() {
+  const selection = figma.currentPage.selection;
+  if (!selection || selection.length === 0) {
+    figma.notify(NOTIFY_MESSAGES.SELECT_LAYER);
+    figma.ui.postMessage({ type: MESSAGE.NON_TEXT_CONTRAST.RESULTS, results: [] });
+    return;
+  }
+  const results = runNonTextContrastCheck(selection);
+  figma.ui.postMessage({ type: MESSAGE.NON_TEXT_CONTRAST.RESULTS, results });
+}
+
+async function sendPaletteColorsAndMatrix() {
+  const colors = await getLocalPaletteColors();
+  const matrix = computePaletteMatrix(colors);
+  figma.ui.postMessage({ type: MESSAGE.PALETTE_AUDIT.COLORS, colors, matrix });
+}
+
 figma.ui.onmessage = (msg: PluginMessage) => {
+
+  //Open the non-text contrast checker (WCAG 1.4.11) for the current selection.
+  if (msg.type === MESSAGE.VIEW.NON_TEXT_CONTRAST) {
+    figma.showUI(__uiFiles__.non_text_contrast,
+      { width: 420, height: 640, title: MESSAGE.WINDOW.NON_TEXT_CONTRAST });
+    runAndSendNonTextCheck();
+    return;
+  }
+
+  if (msg.type === MESSAGE.NON_TEXT_CONTRAST.RUN) {
+    runAndSendNonTextCheck();
+    return;
+  }
+
+  if (msg.type === MESSAGE.NON_TEXT_CONTRAST.SELECT_NODE) {
+    if (msg.nodeId) selectAndZoomToNode(msg.nodeId);
+    return;
+  }
+
+  if (msg.type === MESSAGE.NON_TEXT_CONTRAST.TOGGLE_BADGES) {
+    if (msg.show) {
+      showNonTextBadges(runNonTextContrastCheck(figma.currentPage.selection));
+    } else {
+      clearNonTextBadges();
+    }
+    return;
+  }
+
+  //Open Palette Audit Mode: role-tag local color styles and score every meaningful pair.
+  if (msg.type === MESSAGE.VIEW.PALETTE_AUDIT) {
+    figma.showUI(__uiFiles__.palette_audit,
+      { width: 480, height: 700, title: MESSAGE.WINDOW.PALETTE_AUDIT });
+    sendPaletteColorsAndMatrix();
+    return;
+  }
+
+  if (msg.type === MESSAGE.PALETTE_AUDIT.GET_COLORS) {
+    sendPaletteColorsAndMatrix();
+    return;
+  }
+
+  if (msg.type === MESSAGE.PALETTE_AUDIT.SET_ROLE) {
+    if (msg.styleId) {
+      const role = (msg.role as ColorRole) || null;
+      setColorRole(msg.styleId, role).then(sendPaletteColorsAndMatrix);
+    }
+    return;
+  }
+
+  if (msg.type === MESSAGE.PALETTE_AUDIT.SUGGEST_FIX) {
+    if (msg.fgId && msg.bgId && typeof msg.minRatio === 'number') {
+      getLocalPaletteColors().then((colors) => {
+        const matrix = computePaletteMatrix(colors);
+        const cell = matrix.find((c) => c.fgId === msg.fgId && c.bgId === msg.bgId);
+        if (cell) {
+          const suggestions = suggestAccessibleFixes(cell, msg.minRatio as number);
+          figma.ui.postMessage({
+            type: MESSAGE.PALETTE_AUDIT.SUGGESTIONS,
+            fgId: cell.fgId,
+            bgId: cell.bgId,
+            suggestions,
+          });
+        }
+      });
+    }
+    return;
+  }
 
   //Open vision simulation view.
   if (msg.type === MESSAGE.VIEW.VISION_SIMULATION) {
@@ -104,7 +212,7 @@ figma.ui.onmessage = (msg: PluginMessage) => {
 
   //Open the ai gen color pattern.
   if (msg.type === MESSAGE.VIEW.AI_PATTERN) {
-    figma.showUI(__uiFiles__.color_pattern, { width: 400, height: 700, title: MESSAGE.WINDOW.AI_COLOR_PATTERN });
+    figma.showUI(__uiFiles__.color_pattern, { width: 480, height: 700, title: MESSAGE.WINDOW.AI_COLOR_PATTERN });
     colorPatternHueOffset = 0;
     postColorPatternPalette(0);
     return;
@@ -140,6 +248,27 @@ figma.ui.onmessage = (msg: PluginMessage) => {
     checkContrastWithOnChangeColors(frameColor, textColor);
     
     applyNewColorsToTheFrame(selection[0], frameColor, textColor);
+    return;
+  }
+
+  if (msg.type === MESSAGE.SHOW_TOAST) {
+    if (msg.message) figma.notify(msg.message);
+    return;
+  }
+
+  if (msg.type === MESSAGE.SAVE_PALETTE_PAIR) {
+    const { frameColor, textColor, contrast } = msg;
+    if (frameColor && textColor && typeof contrast === 'number') {
+      savePairToPalette({
+        frameColor,
+        textColor,
+        contrast,
+        mode: msg.mode === 'ui-element' ? 'ui-element' : 'text',
+        textSize: msg.textSize === 'large' ? 'large' : 'normal',
+      }).then(() => {
+        figma.notify('Pair saved to palette');
+      });
+    }
     return;
   }
 

@@ -13,7 +13,9 @@
     "main":"./dist/ui.html",
     "vision_simulation":"./dist/vision_simulation.html",
     "color_pattern":"./dist/color-pattern.html",
-    "color_contrast":"./dist/color-contrast.html"
+    "color_contrast":"./dist/color-contrast.html",
+    "non_text_contrast":"./dist/non-text-contrast.html",
+    "palette_audit":"./dist/palette-audit.html"
   },
   "networkAccess": {
     "allowedDomains": [

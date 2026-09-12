@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <style>
+      .ntc-subtitle {
+        font-size: 12px;
+        opacity: 0.75;
+        margin: -0.5em 0 1.1em;
+      }
+      .ntc-controls {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75em;
+        margin-bottom: 1em;
+      }
+      .ntc-controls button {
+        width: auto;
+        min-height: 2.25rem;
+        margin-bottom: 0;
+        font-size: 13px;
+        padding: 0.4em 0.9em;
+      }
+      .ntc-toggle {
+        display: flex;
+        align-items: center;
+        gap: 0.4em;
+        font-size: 12px;
+        cursor: pointer;
+      }
+      .ntc-toggle input {
+        cursor: pointer;
+      }
+      .ntc-summary {
+        display: flex;
+        gap: 0.6em;
+        margin-bottom: 1.1em;
+        flex-wrap: wrap;
+      }
+      .ntc-chip {
+        font-size: 11px;
+        font-weight: 700;
+        border-radius: 999px;
+        padding: 0.3em 0.75em;
+      }
+      .ntc-chip--fail { background: #7a1f1f; color: #fdecec; }
+      .ntc-chip--review { background: #7a5b00; color: #fff6df; }
+      .ntc-chip--pass { background: #1e6b2e; color: #eafbea; }
+
+      .ntc-group-title {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        opacity: 0.7;
+        margin: 1em 0 0.5em;
+      }
+      .ntc-item {
+        display: flex;
+        align-items: center;
+        gap: 0.6em;
+        border-radius: 8px;
+        padding: 0.6em 0.7em;
+        margin-bottom: 0.5em;
+        cursor: pointer;
+        background: #fafafa;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+        transition: background 0.15s;
+      }
+      .ntc-item:hover {
+        background: #f0f0f0;
+      }
+      .ntc-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .ntc-dot--pass { background: #1e6b2e; }
+      .ntc-dot--fail { background: #7a1f1f; }
+      .ntc-dot--review { background: #b07d00; }
+      .ntc-item-main {
+        flex: 1;
+        min-width: 0;
+      }
+      .ntc-item-name {
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ntc-item-meta {
+        font-size: 11px;
+        opacity: 0.7;
+      }
+      .ntc-item-ratio {
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .ntc-empty {
+        font-size: 13px;
+        opacity: 0.75;
+        text-align: center;
+        padding: 2em 1em;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .ntc-item {
+          background: #23272b;
+          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        }
+        .ntc-item:hover {
+          background: #2d3339;
+        }
+      }
+    </style>
+  </head>
+  <body id="dark">
+    <div class="container">
+      <button id="back">Back</button>
+      <div id="color-contrast-tool">
+        <div class="ntc-subtitle">WCAG 1.4.11 — icons, borders &amp; focus indicators need 3:1 against their background.</div>
+
+        <div class="ntc-controls">
+          <button type="button" id="recheck-btn">Re-check selection</button>
+          <label class="ntc-toggle">
+            <input type="checkbox" id="badges-toggle" />
+            Show badges on canvas
+          </label>
+        </div>
+
+        <div class="ntc-summary" id="summary"></div>
+
+        <div id="results-list"></div>
+      </div>
+    </div>
+  </body>
+</html>
+
+<script type="module">
+  /** Must match `MESSAGE` in constants/constants.ts */
+  const MESSAGE = {
+    BACK: 'BACK',
+    NON_TEXT_CONTRAST: {
+      RUN: 'NON_TEXT_CONTRAST_RUN',
+      RESULTS: 'NON_TEXT_CONTRAST_RESULTS',
+      SELECT_NODE: 'NON_TEXT_CONTRAST_SELECT_NODE',
+      TOGGLE_BADGES: 'NON_TEXT_CONTRAST_TOGGLE_BADGES',
+    },
+  };
+
+  const KIND_LABELS = {
+    icon: 'Icon',
+    border: 'Border',
+    'focus-indicator': 'Focus indicator',
+  };
+
+  const GROUPS = [
+    { status: 'fail', title: 'Fail' },
+    { status: 'review', title: 'Needs review' },
+    { status: 'pass', title: 'Pass' },
+  ];
+
+  let results = [];
+
+  function renderSummary() {
+    const counts = { pass: 0, fail: 0, review: 0 };
+    for (const r of results) counts[r.status]++;
+    const summary = document.getElementById('summary');
+    summary.innerHTML = '';
+    const order = [
+      ['fail', counts.fail],
+      ['review', counts.review],
+      ['pass', counts.pass],
+    ];
+    for (const [status, count] of order) {
+      const chip = document.createElement('span');
+      chip.className = 'ntc-chip ntc-chip--' + status;
+      chip.textContent = count + ' ' + status;
+      summary.appendChild(chip);
+    }
+  }
+
+  function renderList() {
+    const container = document.getElementById('results-list');
+    container.innerHTML = '';
+
+    if (results.length === 0) {
+      const empty = document.createElement('div');
+      empty.className = 'ntc-empty';
+      empty.textContent = 'No icons, borders, or focus indicators found in the current selection.';
+      container.appendChild(empty);
+      return;
+    }
+
+    for (const group of GROUPS) {
+      const items = results.filter((r) => r.status === group.status);
+      if (items.length === 0) continue;
+
+      const title = document.createElement('div');
+      title.className = 'ntc-group-title';
+      title.textContent = group.title + ' (' + items.length + ')';
+      container.appendChild(title);
+
+      for (const item of items) {
+        const row = document.createElement('div');
+        row.className = 'ntc-item';
+
+        const dot = document.createElement('span');
+        dot.className = 'ntc-dot ntc-dot--' + item.status;
+        row.appendChild(dot);
+
+        const main = document.createElement('div');
+        main.className = 'ntc-item-main';
+        const name = document.createElement('div');
+        name.className = 'ntc-item-name';
+        name.textContent = item.nodeName;
+        const meta = document.createElement('div');
+        meta.className = 'ntc-item-meta';
+        meta.textContent = (KIND_LABELS[item.kind] || item.kind) + (item.reason ? ' — ' + item.reason : '');
+        main.appendChild(name);
+        main.appendChild(meta);
+        row.appendChild(main);
+
+        const ratio = document.createElement('div');
+        ratio.className = 'ntc-item-ratio';
+        ratio.textContent = item.ratio ? item.ratio.toFixed(1) + ':1' : '—';
+        row.appendChild(ratio);
+
+        row.addEventListener('click', () => {
+          parent.postMessage(
+            { pluginMessage: { type: MESSAGE.NON_TEXT_CONTRAST.SELECT_NODE, nodeId: item.nodeId } },
+            '*'
+          );
+        });
+
+        container.appendChild(row);
+      }
+    }
+  }
+
+  function render() {
+    renderSummary();
+    renderList();
+  }
+
+  document.getElementById('back').onclick = () => {
+    parent.postMessage({ pluginMessage: { type: MESSAGE.BACK } }, '*');
+  };
+
+  document.getElementById('recheck-btn').addEventListener('click', () => {
+    parent.postMessage({ pluginMessage: { type: MESSAGE.NON_TEXT_CONTRAST.RUN } }, '*');
+  });
+
+  document.getElementById('badges-toggle').addEventListener('change', (e) => {
+    parent.postMessage(
+      { pluginMessage: { type: MESSAGE.NON_TEXT_CONTRAST.TOGGLE_BADGES, show: e.target.checked } },
+      '*'
+    );
+  });
+
+  window.onmessage = (event) => {
+    const msg = event.data.pluginMessage;
+    if (!msg || msg.type !== MESSAGE.NON_TEXT_CONTRAST.RESULTS) return;
+    results = msg.results || [];
+    render();
+  };
+
+  render();
+</script>

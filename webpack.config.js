@@ -64,6 +64,18 @@ devtool: argv.mode === 'production' ? false : 'inline-source-map',
       chunks: ['code'], // Include only the 'code' chunk (from code.js)
       inject: 'body', // Inject JavaScript into the body
     }),
+    new HtmlWebpackPlugin({
+      filename: 'non-text-contrast.html',
+      template: './views/non-text-contrast.html',
+      chunks: ['code'], // Include only the 'code' chunk (from code.js)
+      inject: 'body', // Inject JavaScript into the body
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'palette-audit.html',
+      template: './views/palette-audit.html',
+      chunks: ['code'], // Include only the 'code' chunk (from code.js)
+      inject: 'body', // Inject JavaScript into the body
+    }),
     new HTMLInlineCSSWebpackPlugin({
       styleTagFactory({ style }) {
         return `<style>${style}</style>`;
