@@ -6,7 +6,7 @@ Technical reference for each feature in the plugin: what it does, how to use it 
 |---|---|---|
 | Color Contrast Checker | [color-contrast.md](color-contrast.md) | `features/color-contrast.ts`, `views/color-contrast.html` |
 | Vision Simulation | [vision-simulation.md](vision-simulation.md) | `features/vision-simulation.ts`, `views/vision_simulation.html` |
-| AI Color Pattern Generator | [color-pattern.md](color-pattern.md) | `features/color-pattern.ts`, `views/color-pattern.html` |
+| Color Pattern Generation (Light & Dark Theme) | [color-pattern.md](color-pattern.md) | `features/color-pattern.ts`, `views/color-pattern.html` |
 | Non-Text Contrast Checker | [non-text-contrast.md](non-text-contrast.md) | `features/non-text-contrast.ts`, `features/contrast-engine.ts`, `views/non-text-contrast.html` |
 | Palette Audit Mode | [palette-audit.md](palette-audit.md) | `features/palette-audit.ts`, `views/palette-audit.html` |
 

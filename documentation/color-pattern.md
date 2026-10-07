@@ -1,8 +1,8 @@
-# AI Color Pattern Generator
+# Color Pattern Generation (Light & Dark Theme)
 
 Generates five distinct, WCAG-conformant accent colors at once — one set tuned for light UI backgrounds, one for dark — so you always get a usable, accessible palette instead of a random one that might fail contrast.
 
-> Despite the name (kept from the original UI), this doesn't call an external AI/API — it's a deterministic HSL search. See [Known limitations](#known-limitations).
+> This doesn't call an external AI model or API — it's a deterministic HSL search. See [Known limitations](#known-limitations).
 
 ## How to use
 
